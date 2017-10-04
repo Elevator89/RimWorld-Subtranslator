@@ -49,7 +49,7 @@ namespace Elevator.Subtranslator
 
 			XDocument mergedDoc = MergeDefs(options.DefsLocation);
 
-			SaveXml(mergedDoc, Path.Combine(options.OutputLocation, "Defs.xml"));
+			mergedDoc.Save(Path.Combine(options.OutputLocation, "Defs.xml"));
 		}
 
 		static XDocument MergeDefs(string defsFullPath)
@@ -60,7 +60,7 @@ namespace Elevator.Subtranslator
 
 			foreach (string defFilePath in Directory.EnumerateFiles(defsFullPath, "*.xml", SearchOption.AllDirectories))
 			{
-				XDocument defXml = LoadXml(defFilePath);
+				XDocument defXml = XDocument.Load(defFilePath);
 				XElement defs = defXml.Root;
 
 				foreach (XElement def in defs.Elements())
@@ -69,21 +69,6 @@ namespace Elevator.Subtranslator
 				}
 			}
 			return mergedXml;
-		}
-
-		static XDocument LoadXml(string filename)
-		{
-			using (StreamReader reader = File.OpenText(filename))
-			{
-				return XDocument.Load(reader, LoadOptions.PreserveWhitespace);
-			}
-		}
-
-		static void SaveXml(XDocument doc, string filename)
-		{
-
-			string output = doc.ToString(SaveOptions.None);
-			File.WriteAllText(filename, output);
 		}
 	}
 }
