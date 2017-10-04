@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using CommandLine;
 using CommandLine.Text;
 using System.IO;
+using System.Xml.Linq;
 
 namespace Elevator.Subtranslator
 {
@@ -46,27 +47,43 @@ namespace Elevator.Subtranslator
 
 			Options options = parseResult.Value;
 
-			IEqualityComparer<string> defDirNameComparer = new DefDirectoryNameComparer();
-			Dictionary<string, string> injectionDirNameMap = new Dictionary<string, string>(defDirNameComparer);
-			foreach (string injDefDirFullPath in Directory.EnumerateDirectories(options.InjectionsLocation))
-			{
-				injectionDirNameMap[Path.GetFileName(injDefDirFullPath)] = injDefDirFullPath;
-			}
+			XDocument mergedDoc = MergeDefs(options.DefsLocation);
 
-			foreach (string defDirFullPath in Directory.EnumerateDirectories(options.DefsLocation))
-			{
-				string defDir = Path.GetFileName(defDirFullPath);
+			SaveXml(mergedDoc, Path.Combine(options.OutputLocation, "Defs.xml"));
+		}
 
-				string injDir = injectionDirNameMap.Keys.FirstOrDefault(key => defDirNameComparer.Equals(defDir, key));
-				if (string.IsNullOrEmpty(injDir))
+		static XDocument MergeDefs(string defsFullPath)
+		{
+			XDocument mergedXml = new XDocument();
+			XElement mergedDefs = new XElement("Defs");
+			mergedXml.Add(mergedDefs);
+
+			foreach (string defFilePath in Directory.EnumerateFiles(defsFullPath, "*.xml", SearchOption.AllDirectories))
+			{
+				XDocument defXml = LoadXml(defFilePath);
+				XElement defs = defXml.Root;
+
+				foreach (XElement def in defs.Elements())
 				{
-					Console.WriteLine("{0} -> ---", defDir);
-				}
-				else
-				{
-					Console.WriteLine("{0} -> {1}", defDir, injDir);
+					mergedDefs.Add(new XElement(def));
 				}
 			}
+			return mergedXml;
+		}
+
+		static XDocument LoadXml(string filename)
+		{
+			using (StreamReader reader = File.OpenText(filename))
+			{
+				return XDocument.Load(reader, LoadOptions.PreserveWhitespace);
+			}
+		}
+
+		static void SaveXml(XDocument doc, string filename)
+		{
+
+			string output = doc.ToString(SaveOptions.None);
+			File.WriteAllText(filename, output);
 		}
 	}
 }
