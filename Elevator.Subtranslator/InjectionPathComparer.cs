@@ -6,8 +6,8 @@ namespace Elevator.Subtranslator
 	{
 		public bool Equals(Injection x, Injection y)
 		{
-			string clearXDefType = x.DefType.Replace("Defs", "").Replace("Def", "");
-			string clearYDefType = y.DefType.Replace("Defs", "").Replace("Def", "");
+			string clearXDefType = x.DefType.Replace("Defs", "Def");
+			string clearYDefType = y.DefType.Replace("Defs", "Def");
 
 			return clearXDefType == clearYDefType && x.DefPath == y.DefPath;
 		}

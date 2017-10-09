@@ -14,7 +14,7 @@ namespace Elevator.Subtranslator
 			DirectoryInfo injectionsDir = new DirectoryInfo(Path.Combine(injectionsDirPath));
 			foreach (DirectoryInfo injectionTypeDir in injectionsDir.EnumerateDirectories())
 			{
-				string defType = injectionTypeDir.Name;
+				string defType = injectionTypeDir.Name.Replace("Defs", "Def");
 				foreach (FileInfo file in injectionTypeDir.EnumerateFiles("*.xml", SearchOption.TopDirectoryOnly))
 				{
 					XDocument injectionsDoc = XDocument.Load(file.FullName);
@@ -55,7 +55,23 @@ namespace Elevator.Subtranslator
 				return null;
 			}
 
-			return GetFieldValue(def, tail);
+			string defFieldValue = GetFieldValue(def, tail);
+
+			while (string.IsNullOrEmpty(defFieldValue))
+			{
+				XAttribute parentNameAttrib = def.Attribute("ParentName");
+
+				if (parentNameAttrib == null) return null;
+
+				defName = parentNameAttrib.Value;
+				def = GetDef(allDefs, defType, defName);
+
+				if (def == null) return null;
+
+				defFieldValue = GetFieldValue(def, tail);
+			}
+
+			return defFieldValue;
 		}
 
 		private XElement GetDef(XElement defsRoot, string defType, string defName)
@@ -65,7 +81,7 @@ namespace Elevator.Subtranslator
 			XElement def = defsRoot.XPathSelectElement(defPath);
 			if (def == null)
 			{
-				defPath = string.Format("{0}[defName = \"{1}\"]", defType.Substring(0, defType.Length - 1), defName);
+				defPath = string.Format("{0}[@Name = \"{1}\"]", defType, defName);
 				def = defsRoot.XPathSelectElement(defPath);
 			}
 			return def;

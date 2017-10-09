@@ -3,6 +3,7 @@ using System.Linq;
 using CommandLine;
 using System.IO;
 using System.Xml.Linq;
+using System;
 
 namespace Elevator.Subtranslator
 {
@@ -36,17 +37,75 @@ namespace Elevator.Subtranslator
 
 			InjectionPathComparer injComparer = new InjectionPathComparer();
 
-			IEnumerable<Injection> itemsToTranslate = etalonInjections.Except(injections, injComparer);
-			IEnumerable<Injection> itemsToDelete = injections.Except(etalonInjections, injComparer);
+			List<Injection> itemsToTranslate = etalonInjections.Except(injections, injComparer).ToList();
+			List<Injection> itemsToDelete = injections.Except(etalonInjections, injComparer).ToList();
 
 			XDocument mergedDoc = MergeDefs(options.DefsPath);
-			itemsToTranslate = analyzer.FillOriginalValues(mergedDoc, itemsToTranslate).Where(inj => !string.IsNullOrEmpty(inj.Original));
-			itemsToDelete = analyzer.FillOriginalValues(mergedDoc, itemsToDelete).Where(inj => string.IsNullOrEmpty(inj.Original));
+			itemsToTranslate = analyzer.FillOriginalValues(mergedDoc, itemsToTranslate).ToList();
+			itemsToDelete = analyzer.FillOriginalValues(mergedDoc, itemsToDelete).ToList();
 
-			File.WriteAllLines(Path.Combine(options.OutputPath, "InjectionsToTranslate.txt"), itemsToTranslate.Select(inj => string.Format("{2}: <{0}>{1}</{0}>", inj.DefPath, inj.Original, inj.DefType)));
-			File.WriteAllLines(Path.Combine(options.OutputPath, "InjectionsToDelete.txt"), itemsToDelete.Select(inj => string.Format("{0}: {1}", inj.DefType, inj.DefPath)));
+			List<Tuple<Injection, Injection>> moved = FindMovedInjections(itemsToDelete, itemsToTranslate).ToList();
+			itemsToTranslate = itemsToTranslate.Except(moved.Select(item => item.Item2)).ToList();
+			itemsToDelete = itemsToDelete.Except(moved.Select(item => item.Item1)).ToList();
 
-			//mergedDoc.Save(Path.Combine(options.OutputPath, "MergedDoc.xml"));
+			List<IGrouping<string, Injection>> groupedItemsToTranslate = itemsToTranslate.GroupBy(inj => inj.DefType).ToList();
+			List<IGrouping<string, Injection>> groupedItemsToDelete = itemsToDelete.GroupBy(inj => inj.DefType).ToList();
+
+			using (StreamWriter sw = File.CreateText(Path.Combine(options.OutputPath, "InjectionsReport.txt")))
+			{
+				sw.WriteLine("Items to translate:");
+				foreach (IGrouping<string, Injection> group in groupedItemsToTranslate)
+				{
+					sw.WriteLine(group.Key + ":");
+					foreach (Injection injection in group)
+					{
+						sw.WriteLine("\t<{0}>{1}</{0}>", injection.DefPath, injection.Original);
+					}
+				}
+
+				sw.WriteLine();
+				sw.WriteLine("Items to delete:");
+				foreach (IGrouping<string, Injection> group in groupedItemsToDelete)
+				{
+					sw.WriteLine(group.Key + ":");
+					foreach (Injection injection in group)
+					{
+						sw.WriteLine("\t<{0}>{1}</{0}>", injection.DefPath, injection.Original);
+					}
+				}
+
+				sw.WriteLine();
+				sw.WriteLine("Items to move:");
+				foreach (Tuple<Injection, Injection> pair in moved)
+				{
+					sw.WriteLine("\t<{0}>{1}</{0}> -------->" + Environment.NewLine + "\t\t<{2}>{3}</{2}>", pair.Item1.DefPath, pair.Item1.Translation, pair.Item2.DefPath, pair.Item2.Translation);
+				}
+				sw.Close();
+			}
+		}
+
+		static IEnumerable<Tuple<Injection, Injection>> FindMovedInjections(List<Injection> itemsToDelete, List<Injection> itemsToTranslate)
+		{
+			foreach (Injection toDelete in itemsToDelete)
+			{
+				if (string.IsNullOrEmpty(toDelete.Original))
+					continue;
+
+				foreach (Injection toTranslate in itemsToTranslate)
+				{
+					if (string.IsNullOrEmpty(toTranslate.Original))
+						continue;
+
+					if (StringsAreSimilar(toDelete.Original, toTranslate.Original))
+						yield return new Tuple<Injection, Injection>(toDelete, toTranslate);
+				}
+			}
+		}
+
+		static bool StringsAreSimilar(string a, string b)
+		{
+			LevenshteinMeter meter = new LevenshteinMeter(1, 1, 1);
+			return meter.GetNormedDistanceQ(a, b, 100f) < 0.1f;
 		}
 
 		static XDocument MergeDefs(string defsFullPath)
