@@ -11,21 +11,34 @@ namespace Elevator.Subtranslator
 	{
 		public IEnumerable<Injection> ReadInjections(string injectionsDirPath)
 		{
-			DirectoryInfo injectionsDir = new DirectoryInfo(Path.Combine(injectionsDirPath));
+			List<Injection> injections = new List<Injection>();
+
+			DirectoryInfo injectionsDir = new DirectoryInfo(injectionsDirPath);
 			foreach (DirectoryInfo injectionTypeDir in injectionsDir.EnumerateDirectories())
 			{
 				string defType = injectionTypeDir.Name.Replace("Defs", "Def");
 				foreach (FileInfo file in injectionTypeDir.EnumerateFiles("*.xml", SearchOption.TopDirectoryOnly))
 				{
-					XDocument injectionsDoc = XDocument.Load(file.FullName);
-					XElement languageData = injectionsDoc.Root;
-
-					foreach (XElement injection in languageData.Elements())
+					try
 					{
-						yield return new Injection(defType, injection.Name.LocalName) { Translation = injection.Value };
+						XDocument injectionsDoc = XDocument.Load(file.FullName);
+						XElement languageData = injectionsDoc.Root;
+
+						foreach (XElement injection in languageData.Elements())
+						{
+							injections.Add(new Injection(injectionTypeDir.Name, defType, injection.Name.LocalName) { Translation = injection.Value });
+						}
 					}
+					catch (Exception ex)
+					{
+						Console.WriteLine(ex);
+						Console.WriteLine("FIle {0} was impossible to read", file.FullName);
+						continue;
+					}
+
 				}
 			}
+			return injections;
 		}
 
 		public IEnumerable<Injection> FillOriginalValues(XDocument mergedDefDoc, IEnumerable<Injection> injections)

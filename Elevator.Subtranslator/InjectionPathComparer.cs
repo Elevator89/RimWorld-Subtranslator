@@ -4,18 +4,17 @@ namespace Elevator.Subtranslator
 {
 	class InjectionPathComparer : IEqualityComparer<Injection>
 	{
+		private readonly DefTypeComparer _defTypeComparer = new DefTypeComparer();
+
 		public bool Equals(Injection x, Injection y)
 		{
-			string clearXDefType = x.DefType.Replace("Defs", "Def");
-			string clearYDefType = y.DefType.Replace("Defs", "Def");
 
-			return clearXDefType == clearYDefType && x.DefPath == y.DefPath;
+			return _defTypeComparer.Equals(x.DefType, y.DefType) && x.DefPath == y.DefPath;
 		}
 
 		public int GetHashCode(Injection obj)
 		{
-			string clearDefType = obj.DefType.Replace("Defs", "").Replace("Def", "");
-			return clearDefType.GetHashCode() * 17 + obj.DefPath.GetHashCode();
+			return _defTypeComparer.GetHashCode(obj.DefType) * 17 + obj.DefPath.GetHashCode();
 		}
 	}
 }

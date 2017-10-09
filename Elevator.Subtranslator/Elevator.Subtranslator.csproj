@@ -47,6 +47,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DefTypeComparer.cs" />
     <Compile Include="InjectionPathComparer.cs" />
     <Compile Include="Injection.cs" />
     <Compile Include="InjectionAnalyzer.cs" />

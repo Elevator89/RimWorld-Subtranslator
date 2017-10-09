@@ -18,8 +18,11 @@ namespace Elevator.Subtranslator
 		[Option('e', "etalon", Required = true, HelpText = "Etalon 'DefInjected' folder location.")]
 		public string InjectionsEtalonPath { get; set; }
 
-		[Option('o', "output", Required = false, HelpText = "Output folder location.")]
-		public string OutputPath { get; set; }
+		[Option('a', "append", Required = false, DefaultValue = false, HelpText = "Append new translation lines to current localization or not")]
+		public bool AppendTranslation { get; set; }
+
+		[Option('r', "report", Required = false, HelpText = "Report file output path.")]
+		public string ReportPath { get; set; }
 	}
 
 	class Program
@@ -32,10 +35,11 @@ namespace Elevator.Subtranslator
 			Options options = parseResult.Value;
 
 			InjectionAnalyzer analyzer = new InjectionAnalyzer();
-			IEnumerable<Injection> injections = analyzer.ReadInjections(options.InjectionsPath);
-			IEnumerable<Injection> etalonInjections = analyzer.ReadInjections(options.InjectionsEtalonPath);
+			List<Injection> injections = analyzer.ReadInjections(options.InjectionsPath).ToList();
+			List<Injection> etalonInjections = analyzer.ReadInjections(options.InjectionsEtalonPath).ToList();
 
 			InjectionPathComparer injComparer = new InjectionPathComparer();
+			DefTypeComparer defTypeComparer = new DefTypeComparer();
 
 			List<Injection> itemsToTranslate = etalonInjections.Except(injections, injComparer).ToList();
 			List<Injection> itemsToDelete = injections.Except(etalonInjections, injComparer).ToList();
@@ -51,7 +55,36 @@ namespace Elevator.Subtranslator
 			List<IGrouping<string, Injection>> groupedItemsToTranslate = itemsToTranslate.GroupBy(inj => inj.DefType).ToList();
 			List<IGrouping<string, Injection>> groupedItemsToDelete = itemsToDelete.GroupBy(inj => inj.DefType).ToList();
 
-			using (StreamWriter sw = File.CreateText(Path.Combine(options.OutputPath, "InjectionsReport.txt")))
+			if (options.AppendTranslation)
+			{
+				DirectoryInfo injectionsDir = new DirectoryInfo(options.InjectionsPath);
+
+				foreach (IGrouping<string, Injection> group in groupedItemsToTranslate)
+				{
+					string defType = group.Key;
+					Injection injectionWithSameTypeDef = injections.FirstOrDefault(inj => defTypeComparer.Equals(inj.DefType, defType));
+
+					DirectoryInfo defTypeDir = 
+						injectionWithSameTypeDef == null 
+						? Directory.CreateDirectory(Path.Combine(options.InjectionsPath, defType)) 
+						: new DirectoryInfo(Path.Combine(injectionsDir.FullName, injectionWithSameTypeDef.DirectoryName));
+
+					XDocument doc = new XDocument();
+
+					XElement languageData = new XElement("LanguageData");
+					doc.Add(languageData);
+
+					foreach (Injection injection in group)
+					{
+						XElement injectionElement = new XElement(injection.DefPath, injection.Original);
+						languageData.Add(injectionElement);
+					}
+
+					doc.Save(Path.Combine(defTypeDir.FullName, "Translate.xml"));
+				}
+			}
+
+			using (StreamWriter sw = File.CreateText(options.ReportPath))
 			{
 				sw.WriteLine("Items to translate:");
 				foreach (IGrouping<string, Injection> group in groupedItemsToTranslate)
