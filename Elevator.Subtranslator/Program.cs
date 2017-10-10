@@ -62,12 +62,12 @@ namespace Elevator.Subtranslator
 				foreach (IGrouping<string, Injection> group in groupedItemsToTranslate)
 				{
 					string defType = group.Key;
-					Injection injectionWithSameTypeDef = injections.FirstOrDefault(inj => defTypeComparer.Equals(inj.DefType, defType));
+					Injection injectionWithSameDefType = injections.FirstOrDefault(inj => defTypeComparer.Equals(inj.DefType, defType));
 
 					DirectoryInfo defTypeDir = 
-						injectionWithSameTypeDef == null 
+						injectionWithSameDefType == null 
 						? Directory.CreateDirectory(Path.Combine(options.InjectionsPath, defType)) 
-						: new DirectoryInfo(Path.Combine(injectionsDir.FullName, injectionWithSameTypeDef.DirectoryName));
+						: new DirectoryInfo(Path.Combine(injectionsDir.FullName, injectionWithSameDefType.DirectoryName));
 
 					XDocument doc = new XDocument();
 
@@ -111,7 +111,7 @@ namespace Elevator.Subtranslator
 				sw.WriteLine("Items to move:");
 				foreach (Tuple<Injection, Injection> pair in moved)
 				{
-					sw.WriteLine("\t<{0}>{1}</{0}> -------->" + Environment.NewLine + "\t\t<{2}>{3}</{2}>", pair.Item1.DefPath, pair.Item1.Translation, pair.Item2.DefPath, pair.Item2.Translation);
+					sw.WriteLine("\t<{0}>{1}</{0}> -------->" + Environment.NewLine + "\t\t<{2}>{3}</{2}>", pair.Item1.DefPath, pair.Item1.Original, pair.Item2.DefPath, pair.Item2.Original);
 				}
 				sw.Close();
 			}
@@ -138,7 +138,7 @@ namespace Elevator.Subtranslator
 		static bool StringsAreSimilar(string a, string b)
 		{
 			LevenshteinMeter meter = new LevenshteinMeter(1, 1, 1);
-			return meter.GetNormedDistanceQ(a, b, 100f) < 0.1f;
+			return meter.GetNormedDistanceQ(a, b, 1000f) < 0.05f;
 		}
 
 		static XDocument MergeDefs(string defsFullPath)
