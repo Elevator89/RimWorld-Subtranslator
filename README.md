@@ -18,11 +18,11 @@ Example:
 ```
 
 
-`-d, --defs` - path to Def folder (required);
+`-d, --defs` - path to Def folder. If specified, the tool will use these values in output report. If not specified, etalon translation values will be used (not required);
 
-`-i, --injections` - path to target localization 'DefInjected' folder (required);
+`-i, --injections` - path to 'DefInjected' folder of target localization (required);
 
-`-e, --etalon` - path to etalon localization 'DefInjected' folder (required);
+`-e, --etalon` - path to 'DefInjected' folder of etalon localization (required);
 
 `-a, --append` - append new translation lines to current localization or not (not requered, default: false);
 

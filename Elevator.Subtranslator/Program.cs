@@ -1,21 +1,20 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using CommandLine;
+﻿using CommandLine;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Xml.Linq;
-using System;
 
 namespace Elevator.Subtranslator
 {
 	class Options
 	{
-		[Option('d', "defs", Required = true, HelpText = "Definition folder location.")]
+		[Option('d', "defs", Required = false, HelpText = "Path to Def folder. If specified, the tool will use these values in output report. If not specified, etalon translation values will be used.")]
 		public string DefsPath { get; set; }
 
-		[Option('i', "injections", Required = true, HelpText = "Localized 'DefInjected' folder location.")]
+		[Option('i', "injections", Required = true, HelpText = "Path to 'DefInjected' folder of target localization.")]
 		public string InjectionsPath { get; set; }
 
-		[Option('e', "etalon", Required = true, HelpText = "Etalon 'DefInjected' folder location.")]
+		[Option('e', "etalon", Required = true, HelpText = "Path to 'DefInjected' folder of etalon localization.")]
 		public string InjectionsEtalonPath { get; set; }
 
 		[Option('a', "append", Required = false, DefaultValue = false, HelpText = "Append new translation lines to current localization or not")]
@@ -44,13 +43,14 @@ namespace Elevator.Subtranslator
 			List<Injection> itemsToTranslate = etalonInjections.Except(injections, injComparer).ToList();
 			List<Injection> itemsToDelete = injections.Except(etalonInjections, injComparer).ToList();
 
-			XDocument mergedDoc = MergeDefs(options.DefsPath);
-			itemsToTranslate = analyzer.FillOriginalValues(mergedDoc, itemsToTranslate).ToList();
-			itemsToDelete = analyzer.FillOriginalValues(mergedDoc, itemsToDelete).ToList();
+			bool useEtalon = string.IsNullOrEmpty(options.DefsPath);
 
-			List<Tuple<Injection, Injection>> moved = FindMovedInjections(itemsToDelete, itemsToTranslate).ToList();
-			itemsToTranslate = itemsToTranslate.Except(moved.Select(item => item.Item2)).ToList();
-			itemsToDelete = itemsToDelete.Except(moved.Select(item => item.Item1)).ToList();
+			if (!useEtalon)
+			{
+				XDocument mergedDoc = MergeDefs(options.DefsPath);
+				itemsToTranslate = analyzer.FillOriginalValues(mergedDoc, itemsToTranslate).ToList();
+				itemsToDelete = analyzer.FillOriginalValues(mergedDoc, itemsToDelete).ToList();
+			}
 
 			List<IGrouping<string, Injection>> groupedItemsToTranslate = itemsToTranslate.GroupBy(inj => inj.DefType).ToList();
 			List<IGrouping<string, Injection>> groupedItemsToDelete = itemsToDelete.GroupBy(inj => inj.DefType).ToList();
@@ -64,9 +64,9 @@ namespace Elevator.Subtranslator
 					string defType = group.Key;
 					Injection injectionWithSameDefType = injections.FirstOrDefault(inj => defTypeComparer.Equals(inj.DefType, defType));
 
-					DirectoryInfo defTypeDir = 
-						injectionWithSameDefType == null 
-						? Directory.CreateDirectory(Path.Combine(options.InjectionsPath, defType)) 
+					DirectoryInfo defTypeDir =
+						injectionWithSameDefType == null
+						? Directory.CreateDirectory(Path.Combine(options.InjectionsPath, defType))
 						: new DirectoryInfo(Path.Combine(injectionsDir.FullName, injectionWithSameDefType.DirectoryName));
 
 					XDocument doc = new XDocument();
@@ -76,7 +76,7 @@ namespace Elevator.Subtranslator
 
 					foreach (Injection injection in group)
 					{
-						XElement injectionElement = new XElement(injection.DefPath, injection.Original);
+						XElement injectionElement = new XElement(injection.DefPath, useEtalon ? injection.Translation : injection.Original);
 						languageData.Add(injectionElement);
 					}
 
@@ -92,7 +92,7 @@ namespace Elevator.Subtranslator
 					sw.WriteLine(group.Key + ":");
 					foreach (Injection injection in group)
 					{
-						sw.WriteLine("\t<{0}>{1}</{0}>", injection.DefPath, injection.Original);
+						sw.WriteLine("\t<{0}>{1}</{0}>", injection.DefPath, useEtalon ? injection.Translation : injection.Original);
 					}
 				}
 
@@ -103,35 +103,10 @@ namespace Elevator.Subtranslator
 					sw.WriteLine(group.Key + ":");
 					foreach (Injection injection in group)
 					{
-						sw.WriteLine("\t<{0}>{1}</{0}>", injection.DefPath, injection.Original);
+						sw.WriteLine("\t<{0}>{1}</{0}>", injection.DefPath, useEtalon ? injection.Translation : injection.Original);
 					}
 				}
-
-				sw.WriteLine();
-				sw.WriteLine("Items to move:");
-				foreach (Tuple<Injection, Injection> pair in moved)
-				{
-					sw.WriteLine("\t<{0}>{1}</{0}> -------->" + Environment.NewLine + "\t\t<{2}>{3}</{2}>", pair.Item1.DefPath, pair.Item1.Original, pair.Item2.DefPath, pair.Item2.Original);
-				}
 				sw.Close();
-			}
-		}
-
-		static IEnumerable<Tuple<Injection, Injection>> FindMovedInjections(List<Injection> itemsToDelete, List<Injection> itemsToTranslate)
-		{
-			foreach (Injection toDelete in itemsToDelete)
-			{
-				if (string.IsNullOrEmpty(toDelete.Original))
-					continue;
-
-				foreach (Injection toTranslate in itemsToTranslate)
-				{
-					if (string.IsNullOrEmpty(toTranslate.Original))
-						continue;
-
-					if (StringsAreSimilar(toDelete.Original, toTranslate.Original))
-						yield return new Tuple<Injection, Injection>(toDelete, toTranslate);
-				}
 			}
 		}
 
