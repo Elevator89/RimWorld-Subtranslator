@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Elevator.Subtranslator
+namespace Elevator.Subtranslator.Common
 {
 	public class LevenshteinMeter
 	{

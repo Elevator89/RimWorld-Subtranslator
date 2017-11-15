@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 
-namespace Elevator.Subtranslator
+namespace Elevator.Subtranslator.Common
 {
-	class DefTypeComparer : IEqualityComparer<string>
+	public class DefTypeComparer : IEqualityComparer<string>
 	{
 		public bool Equals(string x, string y)
 		{

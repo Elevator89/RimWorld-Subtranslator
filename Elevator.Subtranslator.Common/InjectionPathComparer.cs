@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 
-namespace Elevator.Subtranslator
+namespace Elevator.Subtranslator.Common
 {
-	class InjectionPathComparer : IEqualityComparer<Injection>
+	public class InjectionPathComparer : IEqualityComparer<Injection>
 	{
 		private readonly DefTypeComparer _defTypeComparer = new DefTypeComparer();
 
@@ -17,4 +17,5 @@ namespace Elevator.Subtranslator
 			return _defTypeComparer.GetHashCode(obj.DefType) * 17 + obj.DefPath.GetHashCode();
 		}
 	}
+
 }

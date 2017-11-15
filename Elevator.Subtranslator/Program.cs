@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
+using Elevator.Subtranslator.Common;
 
 namespace Elevator.Subtranslator
 {
@@ -47,7 +48,7 @@ namespace Elevator.Subtranslator
 
 			if (!useEtalon)
 			{
-				XDocument mergedDoc = MergeDefs(options.DefsPath);
+				XDocument mergedDoc = DefWorker.MergeDefs(options.DefsPath);
 				itemsToTranslate = analyzer.FillOriginalValues(mergedDoc, itemsToTranslate).ToList();
 				itemsToDelete = analyzer.FillOriginalValues(mergedDoc, itemsToDelete).ToList();
 			}
@@ -86,9 +87,11 @@ namespace Elevator.Subtranslator
 
 			using (StreamWriter sw = File.CreateText(options.ReportPath))
 			{
+				sw.WriteLine();
 				sw.WriteLine("Items to translate:");
 				foreach (IGrouping<string, Injection> group in groupedItemsToTranslate)
 				{
+					sw.WriteLine();
 					sw.WriteLine(group.Key + ":");
 					foreach (Injection injection in group)
 					{
@@ -97,42 +100,19 @@ namespace Elevator.Subtranslator
 				}
 
 				sw.WriteLine();
+				sw.WriteLine();
 				sw.WriteLine("Items to delete:");
 				foreach (IGrouping<string, Injection> group in groupedItemsToDelete)
 				{
+					sw.WriteLine();
 					sw.WriteLine(group.Key + ":");
 					foreach (Injection injection in group)
 					{
-						sw.WriteLine("\t<{0}>{1}</{0}>", injection.DefPath, useEtalon ? injection.Translation : injection.Original);
+						sw.WriteLine("\t{0}:\t{1}\t{2}", injection.DefPath, injection.Original, injection.Translation);
 					}
 				}
 				sw.Close();
 			}
-		}
-
-		static bool StringsAreSimilar(string a, string b)
-		{
-			LevenshteinMeter meter = new LevenshteinMeter(1, 1, 1);
-			return meter.GetNormedDistanceQ(a, b, 1000f) < 0.05f;
-		}
-
-		static XDocument MergeDefs(string defsFullPath)
-		{
-			XDocument mergedXml = new XDocument();
-			XElement mergedDefs = new XElement("Defs");
-			mergedXml.Add(mergedDefs);
-
-			foreach (string defFilePath in Directory.EnumerateFiles(defsFullPath, "*.xml", SearchOption.AllDirectories))
-			{
-				XDocument defXml = XDocument.Load(defFilePath);
-				XElement defs = defXml.Root;
-
-				foreach (XElement def in defs.Elements())
-				{
-					mergedDefs.Add(new XElement(def));
-				}
-			}
-			return mergedXml;
 		}
 	}
 }
