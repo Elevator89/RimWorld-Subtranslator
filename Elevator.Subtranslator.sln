@@ -3,11 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elevator.Subtranslator", "Elevator.Subtranslator\Elevator.Subtranslator.csproj", "{0D56B950-0E7F-4A92-8F71-E4F2D9E33185}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elevator.Subtranslator.Copmarer", "Elevator.Subtranslator.Copmarer\Elevator.Subtranslator.Copmarer.csproj", "{0D56B950-0E7F-4A92-8F71-E4F2D9E33185}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elevator.Subtranslator.BlueprintsAndFrames", "Elevator.Subtranslator.BlueprintsAndFrames\Elevator.Subtranslator.BlueprintsAndFrames.csproj", "{3361A470-FEA4-4B2D-98CD-53D86C7FB3E5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elevator.Subtranslator.Common", "Elevator.Subtranslator.Common\Elevator.Subtranslator.Common.csproj", "{6B08F73A-C27C-4C54-AFA7-AC9574ECFE13}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elevator.Subtranslator.Analyzer", "Elevator.Subtranslator.Analyzer\Elevator.Subtranslator.Analyzer.csproj", "{063E8513-077B-4228-A3D6-D1277E1632D8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elevator.Subtranslator.ListInjectionCompiler", "Elevator.Subtranslator.ListInjectionCompiler\Elevator.Subtranslator.ListInjectionCompiler.csproj", "{35534CF8-63A7-4404-83D2-AD215CE5D44B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +31,14 @@ Global
 		{6B08F73A-C27C-4C54-AFA7-AC9574ECFE13}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6B08F73A-C27C-4C54-AFA7-AC9574ECFE13}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6B08F73A-C27C-4C54-AFA7-AC9574ECFE13}.Release|Any CPU.Build.0 = Release|Any CPU
+		{063E8513-077B-4228-A3D6-D1277E1632D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{063E8513-077B-4228-A3D6-D1277E1632D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{063E8513-077B-4228-A3D6-D1277E1632D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{063E8513-077B-4228-A3D6-D1277E1632D8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{35534CF8-63A7-4404-83D2-AD215CE5D44B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{35534CF8-63A7-4404-83D2-AD215CE5D44B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{35534CF8-63A7-4404-83D2-AD215CE5D44B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{35534CF8-63A7-4404-83D2-AD215CE5D44B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

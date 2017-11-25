@@ -5,7 +5,7 @@ using System.Linq;
 using System.Xml.Linq;
 using Elevator.Subtranslator.Common;
 
-namespace Elevator.Subtranslator
+namespace Elevator.Subtranslator.Analyzer
 {
 	class Options
 	{
@@ -41,17 +41,14 @@ namespace Elevator.Subtranslator
 			InjectionPathComparer injComparer = new InjectionPathComparer();
 			DefTypeComparer defTypeComparer = new DefTypeComparer();
 
-			List<Injection> itemsToTranslate = etalonInjections.Except(injections, injComparer).ToList();
-			List<Injection> itemsToDelete = injections.Except(etalonInjections, injComparer).ToList();
+			XDocument mergedDoc = DefWorker.MergeDefs(options.DefsPath);
 
-			bool useEtalon = string.IsNullOrEmpty(options.DefsPath);
+			HashSet<string> leafs = analyzer.GetInjectionLeafParts(etalonInjections);
+			List<Injection> totalNeededInjections = analyzer.GenerateByLeafParts(mergedDoc, leafs).ToList();
 
-			if (!useEtalon)
-			{
-				XDocument mergedDoc = DefWorker.MergeDefs(options.DefsPath);
-				itemsToTranslate = analyzer.FillOriginalValues(mergedDoc, itemsToTranslate).ToList();
-				itemsToDelete = analyzer.FillOriginalValues(mergedDoc, itemsToDelete).ToList();
-			}
+			List<Injection> itemsToTranslate = totalNeededInjections.Except(injections, injComparer).ToList();
+			List<Injection> itemsToDelete = injections.Except(totalNeededInjections, injComparer).ToList();
+
 
 			List<IGrouping<string, Injection>> groupedItemsToTranslate = itemsToTranslate.GroupBy(inj => inj.DefType).ToList();
 			List<IGrouping<string, Injection>> groupedItemsToDelete = itemsToDelete.GroupBy(inj => inj.DefType).ToList();
@@ -77,7 +74,7 @@ namespace Elevator.Subtranslator
 
 					foreach (Injection injection in group)
 					{
-						XElement injectionElement = new XElement(injection.DefPath, useEtalon ? injection.Translation : injection.Original);
+						XElement injectionElement = new XElement(injection.DefPath, injection.Original);
 						languageData.Add(injectionElement);
 					}
 
@@ -95,7 +92,7 @@ namespace Elevator.Subtranslator
 					sw.WriteLine(group.Key + ":");
 					foreach (Injection injection in group)
 					{
-						sw.WriteLine("\t<{0}>{1}</{0}>", injection.DefPath, useEtalon ? injection.Translation : injection.Original);
+						sw.WriteLine("\t<{0}>{1}</{0}>", injection.DefPath, injection.Original);
 					}
 				}
 
@@ -115,4 +112,5 @@ namespace Elevator.Subtranslator
 			}
 		}
 	}
+
 }

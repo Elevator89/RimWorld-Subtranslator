@@ -94,11 +94,9 @@ namespace Elevator.Subtranslator.Common
 			return false;
 		}
 
-		public static string GetDefFieldValue(XDocument mergedDefDoc, string defType, string path)
+		public static string GetDefFieldValue(XDocument mergedDefDoc, string defType, string[] pathItems)
 		{
 			XElement allDefs = mergedDefDoc.Root;
-
-			string[] pathItems = path.Split(new char[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
 
 			string defName = pathItems.First();
 			IEnumerable<string> tail = pathItems.Skip(1);
