@@ -6,6 +6,7 @@ using System.Linq;
 using System.Xml.Linq;
 using Elevator.Subtranslator.Common;
 using Elevator.Subtranslator.Common.JoinExtensions;
+using System.Xml;
 
 namespace Elevator.Subtranslator.Reporter
 {
@@ -14,9 +15,6 @@ namespace Elevator.Subtranslator.Reporter
 	{
 		[Option('t', "target", Required = true, HelpText = "Path to folder of target localization.")]
 		public string TargetPath { get; set; }
-
-		[Option('e', "etalon", Required = true, HelpText = "Path to folder of etalon localization.")]
-		public string EtalonPath { get; set; }
 
 		[Option('x', "except", Required = false, HelpText = "DefType exceptions")]
 		public string DefTypeExceptions { get; set; }
@@ -58,55 +56,45 @@ namespace Elevator.Subtranslator.Reporter
 			InjectionPathComparer injComparer = new InjectionPathComparer();
 			DefTypeComparer defTypeComparer = new DefTypeComparer();
 
-			List<Injection> targetInjections = injectionAnaluzer.ReadInjections(Path.Combine(options.TargetPath, "DefInjected")).Where(inj => !exceptions.Contains(inj.DefType, defTypeComparer)).ToList();
-			List<Injection> etalonInjections = injectionAnaluzer.ReadInjections(Path.Combine(options.EtalonPath, "DefInjected")).Where(inj => !exceptions.Contains(inj.DefType, defTypeComparer)).ToList();
-			List<GroupedResult> injectionsJoinResult = etalonInjections.FullOuterJoin<Injection, Injection, Injection, GroupedResult>(targetInjections, tgt => tgt, et => et, MergeInjections, injComparer).ToList();
-			List<IGrouping<string, GroupedResult>> injectionGroupedResult = injectionsJoinResult.GroupBy(inj => inj.GroupName).ToList();
+			List<GroupedResult> keyedEntries = ReadCommentedKeyedValues(Path.Combine(options.TargetPath, "Keyed")).ToList();
+			List<GroupedResult> injectedEntries = ReadCommentedInjections(Path.Combine(options.TargetPath, "DefInjected")).Where(inj => !exceptions.Contains(inj.GroupName, defTypeComparer)).ToList();
 
-			List<XmlEntry> targedKeyedEntries = ReadKeyedEntries(Path.Combine(options.TargetPath, "Keyed")).ToList();
-			List<XmlEntry> etalonKeyedEntries = ReadKeyedEntries(Path.Combine(options.EtalonPath, "Keyed")).ToList();
-			List<GroupedResult> keyedJoinResult = etalonKeyedEntries.FullOuterJoin<XmlEntry, XmlEntry, string, GroupedResult>(targedKeyedEntries, tgt => tgt.Key, et => et.Key, MergeKeyedEntries, StringComparer.InvariantCultureIgnoreCase).ToList();
-			List<IGrouping<string, GroupedResult>> keyedGroupedResult = keyedJoinResult.GroupBy(inj => inj.GroupName).ToList();
+            List<IGrouping<string, GroupedResult>> keyedGroupedResult = keyedEntries.GroupBy(inj => inj.GroupName).ToList();
+            List<IGrouping<string, GroupedResult>> injectedGroupedResult = injectedEntries.GroupBy(inj => inj.GroupName).ToList();
 
-			using (StreamWriter sw = File.CreateText(options.ReportPath))
+            using (StreamWriter sw = File.CreateText(options.ReportPath))
 			{
-				sw.WriteLine();
-				sw.WriteLine("Items to translate:");
+                sw.WriteLine();
+                sw.WriteLine("Injected items:");
 
-				foreach (IGrouping<string, GroupedResult> group in keyedGroupedResult)
-				{
-					sw.WriteLine();
-					sw.WriteLine(group.Key);
-					foreach (GroupedResult result in group)
-					{
-						sw.WriteLine("{0}\t{1}\t{2}", result.Key, result.EtalonValue, result.TargetValue);
-					}
-				}
-				sw.Close();
+                foreach (IGrouping<string, GroupedResult> group in injectedGroupedResult)
+                {
+                    sw.WriteLine();
+                    sw.WriteLine(group.Key);
+                    foreach (GroupedResult result in group)
+                    {
+                        sw.WriteLine("{0}\t{1}\t{2}", result.Key, result.EtalonValue, result.TargetValue);
+                    }
+                }
+                sw.WriteLine();
+                sw.WriteLine("Keyed items:");
+
+                foreach (IGrouping<string, GroupedResult> group in keyedGroupedResult)
+                {
+                    sw.WriteLine();
+                    sw.WriteLine(group.Key);
+                    foreach (GroupedResult result in group)
+                    {
+                        sw.WriteLine("{0}\t{1}\t{2}", result.Key, result.EtalonValue, result.TargetValue);
+                    }
+                }
+                sw.Close();
 			}
 		}
 
-		static GroupedResult MergeInjections(Injection etalon, Injection target)
+		static IEnumerable<GroupedResult> ReadCommentedKeyedValues(string path)
 		{
-			return new GroupedResult(
-				etalon == null ? target.DefType : etalon.DefType,
-				etalon == null ? target.DefPath : etalon.DefPath,
-				etalon == null ? null : etalon.Translation,
-				target == null ? null : target.Translation);
-		}
-
-		static GroupedResult MergeKeyedEntries(XmlEntry etalon, XmlEntry target)
-		{
-			return new GroupedResult(
-				etalon == null ? target.Group : etalon.Group,
-				etalon == null ? target.Key : etalon.Key,
-				etalon == null ? null : etalon.Value,
-				target == null ? null : target.Value);
-		}
-
-		static IEnumerable<XmlEntry> ReadKeyedEntries(string keyedPath)
-		{
-			DirectoryInfo keyedDir = new DirectoryInfo(keyedPath);
+			DirectoryInfo keyedDir = new DirectoryInfo(path);
 			foreach (FileInfo file in keyedDir.EnumerateFiles("*.xml", SearchOption.TopDirectoryOnly))
 			{
 				XDocument injectionsDoc;
@@ -122,14 +110,53 @@ namespace Elevator.Subtranslator.Reporter
 				}
 				XElement languageData = injectionsDoc.Root;
 
-				foreach (XElement keyedElement in languageData.Elements())
+                languageData.Nodes().Where(node => node.NodeType == XmlNodeType.Comment);
+
+
+                foreach (XElement keyedElement in languageData.Elements())
 				{
-					yield return new XmlEntry(file.Name, keyedElement.Name.LocalName, keyedElement.Value);
+                    XComment comment = keyedElement.PreviousNode as XComment;
+                    string etalon = comment == null ? string.Empty : comment.Value.Replace(" EN: ", string.Empty);
+
+                    yield return new GroupedResult(file.Name, keyedElement.Name.LocalName, etalon, keyedElement.Value);
 				}
-
 			}
-
 		}
 
-	}
+        static IEnumerable<GroupedResult> ReadCommentedInjections(string injectionsDirPath)
+        {
+            List<GroupedResult> results = new List<GroupedResult>();
+
+            DirectoryInfo injectionsDir = new DirectoryInfo(injectionsDirPath);
+            foreach (DirectoryInfo injectionTypeDir in injectionsDir.EnumerateDirectories())
+            {
+                string defType = injectionTypeDir.Name.Replace("Defs", "Def");
+                foreach (FileInfo file in injectionTypeDir.EnumerateFiles("*.xml", SearchOption.TopDirectoryOnly))
+                {
+                    try
+                    {
+                        XDocument injectionsDoc = XDocument.Load(file.FullName);
+                        XElement languageData = injectionsDoc.Root;
+
+                        foreach (XElement injection in languageData.Elements())
+                        {
+                            XComment comment = injection.PreviousNode as XComment;
+                            string etalon = comment == null ? string.Empty : comment.Value.Replace(" EN: ", string.Empty);
+                            results.Add(new GroupedResult(defType, injection.Name.LocalName, etalon, injection.Value));
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex);
+                        Console.WriteLine("FIle {0} was impossible to read", file.FullName);
+                        continue;
+                    }
+
+                }
+            }
+            return results;
+        }
+
+
+    }
 }
