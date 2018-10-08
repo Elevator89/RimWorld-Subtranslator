@@ -47,6 +47,8 @@
     <Compile Include="Injection.cs" />
     <Compile Include="InjectionAnalyzer.cs" />
     <Compile Include="InjectionPathComparer.cs" />
+    <Compile Include="JoinExtensions\JoinedEnumerable.cs" />
+    <Compile Include="JoinExtensions\JoinedEnumerable`.cs" />
     <Compile Include="LevensteinMeter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
