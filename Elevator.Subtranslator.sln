@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.168
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elevator.Subtranslator.Copmarer", "Elevator.Subtranslator.Copmarer\Elevator.Subtranslator.Copmarer.csproj", "{0D56B950-0E7F-4A92-8F71-E4F2D9E33185}"
 EndProject
@@ -20,6 +20,14 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestApp", "TestApp\TestApp.csproj", "{0CE18D98-204C-426E-A578-01BEC65F4337}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elevator.Subtranslator.TagCaseLower", "Elevator.Subtranslator.TagCaseLower\Elevator.Subtranslator.TagCaseLower.csproj", "{9F814537-BAE4-4672-987D-DD38794E4670}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elevator.Subtranslator.BackstoryIssueGenerator", "Elevator.Subtranslator.BackstoryIssueGenerator\Elevator.Subtranslator.BackstoryIssueGenerator.csproj", "{B153E2F1-5109-4E60-AF40-9BF40904992F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elevator.Subtranslator.BackstoryReindexer", "Elevator.Subtranslator.BackstoryReindexer\Elevator.Subtranslator.BackstoryReindexer.csproj", "{83C24E94-4D23-4FC8-9AEB-7B21BB8A5B15}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elevator.Subtranslator.BackstorySolidAnalyzer", "Elevator.Subtranslator.BackstorySolidAnalyzer\Elevator.Subtranslator.BackstorySolidAnalyzer.csproj", "{D4DDFBB8-7F47-408B-87DB-F1018CB2BE8D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elevator.Subtranslator.BackstoryTitleWidthChecker", "Elevator.Subtranslator.BackstoryTitleWidthChecker\Elevator.Subtranslator.BackstoryTitleWidthChecker.csproj", "{EC9F27A4-3008-41F4-A4E9-86B4C2E6E26D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -63,8 +71,27 @@ Global
 		{9F814537-BAE4-4672-987D-DD38794E4670}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9F814537-BAE4-4672-987D-DD38794E4670}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9F814537-BAE4-4672-987D-DD38794E4670}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B153E2F1-5109-4E60-AF40-9BF40904992F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B153E2F1-5109-4E60-AF40-9BF40904992F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B153E2F1-5109-4E60-AF40-9BF40904992F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B153E2F1-5109-4E60-AF40-9BF40904992F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{83C24E94-4D23-4FC8-9AEB-7B21BB8A5B15}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{83C24E94-4D23-4FC8-9AEB-7B21BB8A5B15}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{83C24E94-4D23-4FC8-9AEB-7B21BB8A5B15}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{83C24E94-4D23-4FC8-9AEB-7B21BB8A5B15}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D4DDFBB8-7F47-408B-87DB-F1018CB2BE8D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D4DDFBB8-7F47-408B-87DB-F1018CB2BE8D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D4DDFBB8-7F47-408B-87DB-F1018CB2BE8D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D4DDFBB8-7F47-408B-87DB-F1018CB2BE8D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EC9F27A4-3008-41F4-A4E9-86B4C2E6E26D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EC9F27A4-3008-41F4-A4E9-86B4C2E6E26D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EC9F27A4-3008-41F4-A4E9-86B4C2E6E26D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EC9F27A4-3008-41F4-A4E9-86B4C2E6E26D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D1FF6998-EA01-4B74-A544-8D2BCB68E9D1}
 	EndGlobalSection
 EndGlobal
