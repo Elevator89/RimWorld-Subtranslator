@@ -29,6 +29,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elevator.Subtranslator.Back
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elevator.Subtranslator.BackstoryTitleWidthChecker", "Elevator.Subtranslator.BackstoryTitleWidthChecker\Elevator.Subtranslator.BackstoryTitleWidthChecker.csproj", "{EC9F27A4-3008-41F4-A4E9-86B4C2E6E26D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elevator.Subtranslator.BackstoryFemalizer", "Elevator.Subtranslator.BackstoryFemalizer\Elevator.Subtranslator.BackstoryFemalizer.csproj", "{3A6DABBB-E7D5-4AB2-AF8E-9114AECEE9FD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -87,6 +89,10 @@ Global
 		{EC9F27A4-3008-41F4-A4E9-86B4C2E6E26D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EC9F27A4-3008-41F4-A4E9-86B4C2E6E26D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EC9F27A4-3008-41F4-A4E9-86B4C2E6E26D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3A6DABBB-E7D5-4AB2-AF8E-9114AECEE9FD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3A6DABBB-E7D5-4AB2-AF8E-9114AECEE9FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3A6DABBB-E7D5-4AB2-AF8E-9114AECEE9FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3A6DABBB-E7D5-4AB2-AF8E-9114AECEE9FD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
