@@ -33,6 +33,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elevator.Subtranslator.Back
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elevator.Subtranslator.LabelGenderer", "Elevator.Subtranslator.LabelGenderer\Elevator.Subtranslator.LabelGenderer.csproj", "{DAE5433E-599F-46A0-AD96-8E6E968227A2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elevator.Subtranslator.LabelRearranger", "Elevator.Subtranslator.LabelRearranger\Elevator.Subtranslator.LabelRearranger.csproj", "{A776728E-18A1-4B02-A93C-F84AB5340EDE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elevator.Subtranslator.LabelDecliner", "Elevator.Subtranslator.LabelDecliner\Elevator.Subtranslator.LabelDecliner.csproj", "{F3A79B03-D1A8-4573-8542-B7276D11983C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -99,6 +103,14 @@ Global
 		{DAE5433E-599F-46A0-AD96-8E6E968227A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DAE5433E-599F-46A0-AD96-8E6E968227A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DAE5433E-599F-46A0-AD96-8E6E968227A2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A776728E-18A1-4B02-A93C-F84AB5340EDE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A776728E-18A1-4B02-A93C-F84AB5340EDE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A776728E-18A1-4B02-A93C-F84AB5340EDE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A776728E-18A1-4B02-A93C-F84AB5340EDE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F3A79B03-D1A8-4573-8542-B7276D11983C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F3A79B03-D1A8-4573-8542-B7276D11983C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F3A79B03-D1A8-4573-8542-B7276D11983C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F3A79B03-D1A8-4573-8542-B7276D11983C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

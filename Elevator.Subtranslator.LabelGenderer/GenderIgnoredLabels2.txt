@@ -1,0 +1,128 @@
+BodyDef Bird.label: птица
+BodyDef BeetleLike.label: жукообразное
+BodyDef BeetleLikeWithClaw.label: жукообразное с клешнями
+BodyDef Monkey.label: обезьяна
+BodyDef QuadrupedAnimalWithClawsTailAndJowl.label: четвероногое с когтями, хвостом и пастью
+BodyDef QuadrupedAnimalWithHooves.label: копытное четвероногое
+BodyDef QuadrupedAnimalWithHoovesAndHorn.label: копытное четвероногое с рогами
+BodyDef QuadrupedAnimalWithHoovesAndHump.label: копытное четвероногое с горбом
+BodyDef QuadrupedAnimalWithHoovesAndTusks.label: копытное четвероногое с бивнями
+BodyDef QuadrupedAnimalWithHoovesTusksAndTrunk.label: копытное четвероногое с бивнями и хоботом
+BodyDef QuadrupedAnimalWithPaws.label: четвероногое
+BodyDef QuadrupedAnimalWithPawsAndTail.label: четвероногое с хвостом
+BodyDef Snake.label: змея
+BodyDef Human.label: человек
+BodyDef Lancer.label: улан
+BodyDef MechanicalCentipede.label: сентипеда
+BodyDef Scyther.label: жнец
+HediffDef AlcoholHigh.stages.warm.label: навеселе
+HediffDef AlcoholHigh.stages.tipsy.label: подшофе
+HediffDef AlcoholHigh.stages.drunk.label: под градусом
+HediffDef AlcoholHigh.stages.hammered.label: в стельку
+HediffDef AlcoholHigh.stages.blackout.label: в отключке
+HediffDef AlcoholTolerance.stages.small-0.label: небольшая
+HediffDef AlcoholTolerance.stages.large.label: средняя
+HediffDef AlcoholTolerance.stages.massive.label: сильная
+HediffDef Hangover.stages.slight.label: лёгкое
+HediffDef Hangover.stages.strong.label: сильное
+HediffDef Hangover.stages.pounding.label: убийственное
+HediffDef AmbrosiaAddiction.stages.withdrawal.label: ломка
+HediffDef GoJuiceHigh.label: под действием Go-сока
+HediffDef BloodLoss.stages.minor-0.label: слабая
+HediffDef BloodLoss.stages.minor-1.label: лёгкая
+HediffDef BloodLoss.stages.severe.label: большая
+HediffDef BloodLoss.stages.extreme.label: огромная
+HediffDef DrugOverdose.comps.HediffComp_Discoverable.discoverLetterLabel: Передозировка: {0}
+HediffDef DrugOverdose.stages.minor-0.label: скрытая
+HediffDef FoodPoisoning.stages.recovering.label: выздоровление
+HediffDef FoodPoisoning.stages.major.label: болезненное
+HediffDef FoodPoisoning.stages.initial.label: начальное
+HediffDef HeartAttack.stages.painful.label: болезненный
+HediffDef HeartAttack.stages.debilitating.label: ослабляющий
+HediffDef HeartAttack.stages.fatal.label: смертельный
+HediffDef Pregnant.comps.HediffComp_Discoverable.discoverLetterLabel: {0} беременна
+HediffDef Pregnant.stages.earlystage.label: первый триместр
+HediffDef Pregnant.stages.middlestage.label: второй триместр
+HediffDef Pregnant.stages.latestage.label: третий триместр
+HediffDef ToxicBuildup.stages.initial-0.label: незаметное
+HediffDef ToxicBuildup.stages.moderate.label: среднее
+HediffDef ToxicBuildup.stages.serious.label: серьёзное
+HediffDef ToxicBuildup.stages.extreme.label: экстремальное
+HediffDef Malnutrition.stages.trivial.label: незначительное
+HediffDef Malnutrition.stages.severe.label: острое
+HediffDef Malnutrition.stages.extreme.label: сильнейшее
+HediffDef Heatstroke.stages.initial-0.label: начальный
+HediffDef Heatstroke.stages.minor.label: лёгкий
+HediffDef Heatstroke.stages.serious.label: серьёзный
+HediffDef Heatstroke.stages.extreme.label: сильнейший
+HediffDef Hypothermia.stages.shivering-1.label: озноб
+HediffDef Hypothermia.stages.serious.label: серьёзная
+HediffDef Hypothermia.stages.extreme.label: тяжелейшая
+HediffDef HypothermicSlowdown.stages.extreme.label: критическое
+HediffDef ArchotechArm.label: архорука
+HediffDef ArchotechArm.comps.HediffComp_VerbGiver.tools.fist.label: кулак
+HediffDef ArchotechEye.label: архоглаз
+HediffDef ArchotechLeg.label: архонога
+HediffDef BionicArm.label: бионическая рука
+HediffDef BionicEar.label: бионическое ухо
+HediffDef BionicEye.label: бионический глаз
+HediffDef BionicHeart.label: бионическое сердце
+HediffDef BionicLeg.label: бионическая нога
+HediffDef BionicSpine.label: бионический позвоночник
+HediffDef BionicStomach.label: бионический желудок
+HediffDef CochlearImplant.label: кохлеарный имплант
+HediffDef PowerClaw.label: силовая клешня
+HediffDef SimpleProstheticArm.label: простой протез руки
+HediffDef SimpleProstheticHeart.label: простой кардиопротез
+HediffDef SimpleProstheticLeg.label: простой протез ноги
+HediffDef Alzheimers.stages.minor-0.label: начальная
+HediffDef Alzheimers.stages.major-1.label: тяжёлая
+HediffDef Carcinoma.stages.extreme-0.label: экстремальная
+HediffDef Carcinoma.stages.extreme-1.label: последняя стадия
+HediffDef HeartArteryBlockage.stages.major-0.label: средний
+HediffDef HeartArteryBlockage.stages.major-1.label: тяжёлый
+HediffDef HeartArteryBlockage.stages.extreme.label: экстремальный
+HediffDef Animal_Plague.stages.extreme-1.label: смертельная
+HediffDef FibrousMechanites.stages.mild_pain.label: умеренная боль
+HediffDef FibrousMechanites.stages.intense_pain.label: сильная боль
+HediffDef SleepingSickness.stages.extreme-0.label: опасная
+HediffDef WoundInfection.stages.extreme-0.label: глубокое
+HediffDef WoundInfection.stages.extreme-1.label: смертельное
+HediffDef Bite.comps.HediffComp_TendDuration.labelSolidTendedWell: обработано
+HediffDef Bite.comps.HediffComp_TendDuration.labelTendedWell: перевязано
+HediffDef Bite.comps.HediffComp_TendDuration.labelTendedWellInner: зашито
+HediffDef Bite.injuryProps.destroyedLabel: отгрызено
+HediffDef Bite.injuryProps.destroyedOutLabel: выгрызено
+HediffDef Bite.labelNounPretty: {0} {1}
+HediffDef Bruise.injuryProps.destroyedLabel: отбито
+HediffDef Bruise.labelNounPretty: {0} на {1}
+HediffDef Burn.injuryProps.destroyedLabel: сгорело
+HediffDef Crack.comps.HediffComp_TendDuration.labelTendedWell: вылечено
+HediffDef Crack.injuryProps.destroyedLabel: раздроблено
+HediffDef Crush.injuryProps.destroyedLabel: раздавлено
+HediffDef Cut.injuryProps.destroyedLabel: отрезано
+HediffDef Cut.injuryProps.destroyedOutLabel: вырезано
+HediffDef Frostbite.comps.HediffComp_TendDuration.labelSolidTendedWell: обогрето
+HediffDef Frostbite.comps.HediffComp_TendDuration.labelTendedWell: отогрето
+HediffDef Frostbite.injuryProps.destroyedLabel: отморожено
+HediffDef Gunshot.injuryProps.destroyedLabel: отстрелено
+HediffDef Gunshot.injuryProps.destroyedOutLabel: прострелено
+HediffDef Misc.label: разное
+HediffDef Misc.injuryProps.destroyedLabel: уничтожено
+HediffDef Misc.labelNoun: ранение
+HediffDef MissingBodyPart.labelNounPretty: отсутствует {0}
+HediffDef Scratch.injuryProps.destroyedLabel: оторвано
+HediffDef Scratch.injuryProps.destroyedOutLabel: вырвано
+HediffDef Shredded.injuryProps.destroyedOutLabel: разорвано
+HediffDef ResurrectionPsychosis.stages.moderate.label: средней тяжести
+HediffDef ResurrectionPsychosis.stages.advanced.label: прогрессирующий
+HediffDef ResurrectionPsychosis.stages.total.label: общий
+HediffDef ResurrectionPsychosis.stages.catatonic.label: ступорозный
+HediffDef LuciferiumAddiction.label: необходим люциферий
+HediffDef LuciferiumAddiction.stages.unmet.label: потребность
+HediffDef FlakeHigh.label: под кайфом от хлопьев психина
+HediffDef PsychiteTeaHigh.label: под кайфом от психинового чая
+HediffDef YayoHigh.label: под кайфом от порошка психина
+HediffDef SmokeleafHigh.label: под кайфом от дымолиста
+HediffDef WakeUpHigh.label: под действием бодрина
+ThingDef FirefoamPopper.comps.CompUsable.useLabel: Привести в действие пожарную хлопушку

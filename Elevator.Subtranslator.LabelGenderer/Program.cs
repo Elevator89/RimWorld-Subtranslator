@@ -14,6 +14,9 @@ namespace Elevator.Subtranslator.LabelGenderer
 		[Option('d', "defs", Required = true, HelpText = "Path to translation DefInjected folder.")]
 		public string DefsPath { get; set; }
 
+		[Option('t', "def types", DefaultValue = "", Required = false, HelpText = "Use only these def types.")]
+		public string DefsTypes { get; set; }
+
 		[Option('m', "male", Required = true, HelpText = "Path to the file with male-gendered nouns.")]
 		public string MaleGenderFile { get; set; }
 
@@ -30,6 +33,19 @@ namespace Elevator.Subtranslator.LabelGenderer
 		public string IgnoreFile { get; set; }
 	}
 
+	class DefInjectionEqualityComparer : IEqualityComparer<Injection>
+	{
+		public bool Equals(Injection x, Injection y)
+		{
+			return x.DefType == y.DefType && x.Translation == y.Translation;
+		}
+
+		public int GetHashCode(Injection obj)
+		{
+			return obj.DefType.GetHashCode() + 37 * obj.Translation.GetHashCode();
+		}
+	}
+
 	class Program
 	{
 		static void Main(string[] args)
@@ -42,33 +58,33 @@ namespace Elevator.Subtranslator.LabelGenderer
 
 			InjectionAnalyzer analyzer = new InjectionAnalyzer();
 
-			//DistinctLines(options.MaleGenderFile);
-			//DistinctLines(options.FemaleGenderFile);
-			//DistinctLines(options.NeuterGenderFile);
-			//DistinctLines(options.PluralGenderFile);
-			//DistinctLines(options.IgnoreFile);
+			HashSet<string> defTypes = new HashSet<string>(options.DefsTypes.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries));
 
 			HashSet<string> maleLabels = new HashSet<string>(File.ReadAllLines(options.MaleGenderFile));
 			HashSet<string> femaleLabels = new HashSet<string>(File.ReadAllLines(options.FemaleGenderFile));
 			HashSet<string> neuterLabels = new HashSet<string>(File.ReadAllLines(options.NeuterGenderFile));
 			HashSet<string> pluralLabels = new HashSet<string>(File.ReadAllLines(options.PluralGenderFile));
-			HashSet<string> ignoredLabels = new HashSet<string>(File.ReadAllLines(options.IgnoreFile));
+			HashSet<string> ignoredInjections = new HashSet<string>(File.ReadAllLines(options.IgnoreFile));
 
 			Injection[] allLabels = analyzer
 				.ReadInjections(options.DefsPath)
-				.Where(inj => GetLastPart(inj) == "label")
+				.Where(inj => defTypes.Contains(inj.DefType))
+				.Where(inj => GetLastPart(inj).ToLowerInvariant().Contains("label"))
+				.Distinct(new DefInjectionEqualityComparer())
 				.Where(inj =>
-					   !maleLabels.Contains(inj.Translation)
+					   !ignoredInjections.Contains(FormInjectionLine(inj))
+					&& !maleLabels.Contains(inj.Translation)
 					&& !femaleLabels.Contains(inj.Translation)
 					&& !neuterLabels.Contains(inj.Translation)
-					&& !pluralLabels.Contains(inj.Translation)
-					&& !ignoredLabels.Contains(inj.Translation))
+					&& !pluralLabels.Contains(inj.Translation))
 				.ToArray();
 
 			Console.WriteLine($"Enter genders for {allLabels.Length} labels.");
 			Console.WriteLine("1 - Male, 2 - Female, 3 - Neuter, 4 - Plural, 0 - ignore label, <ENTER> - skip");
 
 			List<Option> history = new List<Option>();
+
+			string prevDefType = "";
 
 			for (int labelIndex = 0; labelIndex < allLabels.Length; ++labelIndex)
 			{
@@ -105,12 +121,34 @@ namespace Elevator.Subtranslator.LabelGenderer
 						else
 						{
 							string fileName = GetFileForOption(options, option);
+
+							if (option == Option.Ignore)
+							{
+								AppendLine(fileName, FormInjectionLine(injection));
+							}
+							else
+							{
+								if (injection.DefType != prevDefType)
+								{
+									AppendLine(fileName, string.Empty);
+									AppendLine(fileName, "// " + injection.DefType);
+								}
+								AppendLine(fileName, label);
+
+							}
+
 							history.Add(option);
-							AppendLine(fileName, label);
 						}
 						break;
 				}
+
+				prevDefType = injection.DefType;
 			}
+		}
+
+		private static string FormInjectionLine(Injection inj)
+		{
+			return $"{inj.DefType} {inj.DefPath}: {inj.Translation}";
 		}
 
 		private static Option ParseInput(char input)
@@ -151,9 +189,30 @@ namespace Elevator.Subtranslator.LabelGenderer
 			}
 		}
 
-		private static void DistinctLines(string filePath)
+		private static void SmartDistinctLines(string filePath)
 		{
-			File.WriteAllLines(filePath, File.ReadAllLines(filePath).Distinct());
+			string[] allLines = File.ReadAllLines(filePath);
+
+			HashSet<string> usedLines = new HashSet<string>();
+
+			List<string> distinctLines = new List<string>();
+
+			foreach (string line in allLines)
+			{
+				if (string.IsNullOrWhiteSpace(line))
+				{
+					distinctLines.Add(string.Empty);
+					continue;
+				}
+
+				if (usedLines.Contains(line))
+					continue;
+
+				distinctLines.Add(line);
+				usedLines.Add(line);
+			}
+
+			File.WriteAllLines(filePath, distinctLines);
 		}
 
 		private static void AppendLine(string filePath, string line)
