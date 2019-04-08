@@ -33,19 +33,6 @@ namespace Elevator.Subtranslator.LabelGenderer
 		public string IgnoreFile { get; set; }
 	}
 
-	class DefInjectionEqualityComparer : IEqualityComparer<Injection>
-	{
-		public bool Equals(Injection x, Injection y)
-		{
-			return x.DefType == y.DefType && x.Translation == y.Translation;
-		}
-
-		public int GetHashCode(Injection obj)
-		{
-			return obj.DefType.GetHashCode() + 37 * obj.Translation.GetHashCode();
-		}
-	}
-
 	class Program
 	{
 		static void Main(string[] args)
@@ -70,7 +57,7 @@ namespace Elevator.Subtranslator.LabelGenderer
 				.ReadInjections(options.DefsPath)
 				.Where(inj => defTypes.Contains(inj.DefType))
 				.Where(inj => GetLastPart(inj).ToLowerInvariant().Contains("label"))
-				.Distinct(new DefInjectionEqualityComparer())
+				.Distinct(new InjectionTypeTranslationComparer())
 				.Where(inj =>
 					   !ignoredInjections.Contains(FormInjectionLine(inj))
 					&& !maleLabels.Contains(inj.Translation)
@@ -103,7 +90,7 @@ namespace Elevator.Subtranslator.LabelGenderer
 
 					case ConsoleKey.Backspace:
 						string prevFileName = GetFileForOption(options, history[labelIndex - 1]);
-						DeleteLine(prevFileName);
+						FileUtil.DeleteLine(prevFileName);
 						history.RemoveAt(labelIndex - 1);
 						labelIndex -= 2;
 						break;
@@ -124,16 +111,16 @@ namespace Elevator.Subtranslator.LabelGenderer
 
 							if (option == Option.Ignore)
 							{
-								AppendLine(fileName, FormInjectionLine(injection));
+								FileUtil.AppendLine(fileName, FormInjectionLine(injection));
 							}
 							else
 							{
 								if (injection.DefType != prevDefType)
 								{
-									AppendLine(fileName, string.Empty);
-									AppendLine(fileName, "// " + injection.DefType);
+									FileUtil.AppendLine(fileName, string.Empty);
+									FileUtil.AppendLine(fileName, "// " + injection.DefType);
 								}
-								AppendLine(fileName, label);
+								FileUtil.AppendLine(fileName, label);
 
 							}
 
@@ -213,18 +200,6 @@ namespace Elevator.Subtranslator.LabelGenderer
 			}
 
 			File.WriteAllLines(filePath, distinctLines);
-		}
-
-		private static void AppendLine(string filePath, string line)
-		{
-			File.AppendAllLines(filePath, new string[] { line });
-		}
-
-		private static void DeleteLine(string filePath)
-		{
-			List<string> lines = File.ReadAllLines(filePath).ToList();
-			lines.RemoveAt(lines.Count - 1);
-			File.WriteAllLines(filePath, lines);
 		}
 
 		private static string GetLastPart(Injection injection)

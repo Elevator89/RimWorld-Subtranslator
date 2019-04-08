@@ -42,6 +42,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FileUtil.cs" />
+    <Compile Include="InjectionTypeTranslationComparer.cs" />
     <Compile Include="DefTypeComparer.cs" />
     <Compile Include="DefWorker.cs" />
     <Compile Include="Injection.cs" />
