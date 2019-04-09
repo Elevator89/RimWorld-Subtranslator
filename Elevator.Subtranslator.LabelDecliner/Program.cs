@@ -83,7 +83,7 @@ namespace Elevator.Subtranslator.LabelDecliner
 					declinationResult = phrase.Decline(label, GetConditionsEnum.Strict);
 					foreach (CasesEnum labelCase in Enum.GetValues(typeof(CasesEnum)))
 					{
-						Console.WriteLine($"    {labelCase}: {declinationResult.Get(labelCase)}");
+						Console.WriteLine($" {labelCase,15}: {declinationResult.Get(labelCase)}");
 					}
 				}
 				catch
@@ -91,9 +91,11 @@ namespace Elevator.Subtranslator.LabelDecliner
 					Console.WriteLine($"    Failed to decline");
 				}
 
-				Console.WriteLine("<Enter> - accept; <Space> - edit; <Backspace> - back; <Delete> - ignore");
+				Console.Write("<Enter> - accept; <Space> - edit; <Backspace> - back; <Delete> - ignore");
+				ConsoleKey key = Console.ReadKey().Key;
+				Console.WriteLine();
 
-				switch (Console.ReadKey().Key)
+				switch (key)
 				{
 					case ConsoleKey.Escape:
 						return;
@@ -104,8 +106,8 @@ namespace Elevator.Subtranslator.LabelDecliner
 
 						foreach (CasesEnum labelCase in Enum.GetValues(typeof(CasesEnum)))
 						{
-							Console.Write($"    {labelCase}: ");
-							declinationResult.Set(labelCase, Console.ReadLine());
+							Console.Write($" {labelCase,15}: ");
+							declinationResult.Set(labelCase, ConsoleTools.ReadLine(label));
 						}
 						if (injection.DefType != prevDefType)
 						{
