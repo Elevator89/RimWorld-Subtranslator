@@ -50,8 +50,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ConsoleTools.cs" />
+    <Compile Include="DeclinationTools.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="StringExt.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

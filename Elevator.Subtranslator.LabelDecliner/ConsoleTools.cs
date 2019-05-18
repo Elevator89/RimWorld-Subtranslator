@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Text.RegularExpressions;
 
 namespace Elevator.Subtranslator.LabelDecliner
 {
 	public static class ConsoleTools
 	{
+		private static readonly Regex _wordStartRegex = new Regex(@"\s\w", RegexOptions.Compiled);
+
 		public static string ReadLine(string defaultValue)
 		{
 			int cursorBase = Console.CursorLeft;
@@ -34,7 +37,20 @@ namespace Elevator.Subtranslator.LabelDecliner
 				}
 				else if (info.Key == ConsoleKey.LeftArrow && cursorRelative > 0)
 				{
-					cursorRelative--;
+					if (info.Modifiers == ConsoleModifiers.Control)
+					{
+						// Skip nearby whitespaces
+						int startIndex = cursorRelative - 1;
+						while (value[startIndex] == ' ' && startIndex > 0)
+							startIndex--;
+
+						int prevWordStart = value.LastIndexOf(' ', startIndex);
+						cursorRelative = prevWordStart == -1 ? 0 : prevWordStart;
+					}
+					else
+					{
+						cursorRelative--;
+					}
 				}
 				else if (info.Key == ConsoleKey.Home)
 				{
@@ -46,7 +62,24 @@ namespace Elevator.Subtranslator.LabelDecliner
 				}
 				else if (info.Key == ConsoleKey.RightArrow && cursorRelative < value.Length)
 				{
-					cursorRelative++;
+					if (info.Modifiers == ConsoleModifiers.Control)
+					{
+						// Skip nearby whitespaces
+						int startIndex = cursorRelative;
+						while (value[startIndex] == ' ' && startIndex > 0)
+							startIndex++;
+
+						int nextWordStart = value.IndexOf(' ', startIndex);
+						cursorRelative = nextWordStart == -1 ? value.Length : nextWordStart;
+					}
+					else
+					{
+						cursorRelative++;
+					}
+
+					//cursorRelative = info.Modifiers == ConsoleModifiers.Control
+					//	? value.IndexOf(' ', cursorRelative)
+					//	: cursorRelative + 1;
 				}
 				else if (char.IsLetterOrDigit(c) || char.IsSeparator(c) || char.IsSymbol(c) || char.IsPunctuation(c))
 				{

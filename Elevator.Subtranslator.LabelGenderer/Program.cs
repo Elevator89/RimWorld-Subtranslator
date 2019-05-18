@@ -111,16 +111,16 @@ namespace Elevator.Subtranslator.LabelGenderer
 
 							if (option == Option.Ignore)
 							{
-								FileUtil.AppendLine(fileName, FormInjectionLine(injection));
+								FileUtil.PushLine(fileName, FormInjectionLine(injection));
 							}
 							else
 							{
 								if (injection.DefType != prevDefType)
 								{
-									FileUtil.AppendLine(fileName, string.Empty);
-									FileUtil.AppendLine(fileName, "// " + injection.DefType);
+									FileUtil.PushLine(fileName, string.Empty);
+									FileUtil.PushLine(fileName, "// " + injection.DefType);
 								}
-								FileUtil.AppendLine(fileName, label);
+								FileUtil.PushLine(fileName, label);
 
 							}
 

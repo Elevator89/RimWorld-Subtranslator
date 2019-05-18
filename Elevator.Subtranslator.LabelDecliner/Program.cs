@@ -11,7 +11,7 @@ namespace Elevator.Subtranslator.LabelDecliner
 {
 	enum Option { Unknown, Accept, Ignore }
 
-	class Options
+	class Arguments
 	{
 		[Option('d', "defs", Required = true, HelpText = "Path to translation DefInjected folder.")]
 		public string DefsPath { get; set; }
@@ -30,11 +30,11 @@ namespace Elevator.Subtranslator.LabelDecliner
 	{
 		static void Main(string[] args)
 		{
-			ParserResult<Options> parseResult = Parser.Default.ParseArguments<Options>(args);
+			ParserResult<Arguments> parseResult = Parser.Default.ParseArguments<Arguments>(args);
 			if (parseResult.Errors.Any())
 				return;
 
-			Options options = parseResult.Value;
+			Arguments arguments = parseResult.Value;
 
 			// Создаем коллекцию всех существительных.
 			CyrNounCollection nouns = new CyrNounCollection();
@@ -47,14 +47,14 @@ namespace Elevator.Subtranslator.LabelDecliner
 
 			InjectionAnalyzer analyzer = new InjectionAnalyzer();
 
-			HashSet<string> defTypes = new HashSet<string>(options.DefsTypes.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries));
+			HashSet<string> defTypes = new HashSet<string>(arguments.DefsTypes.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries));
 
-			HashSet<string> ignoredInjections = new HashSet<string>(File.ReadAllLines(options.IgnoreFile));
+			HashSet<string> ignoredInjections = new HashSet<string>(File.ReadAllLines(arguments.IgnoreFile));
 
-			HashSet<string> casedLabels = new HashSet<string>(File.ReadAllLines(options.Output).Select(line => new string(line.TakeWhile(c => c != ';').ToArray())));
+			HashSet<string> casedLabels = new HashSet<string>(File.ReadAllLines(arguments.Output).Select(line => new string(line.TakeWhile(c => c != ';').ToArray())));
 
 			Injection[] allLabels = analyzer
-				.ReadInjections(options.DefsPath)
+				.ReadInjections(arguments.DefsPath)
 				.Where(inj => defTypes.Contains(inj.DefType))
 				.Where(inj => GetLastPart(inj).ToLowerInvariant().Contains("label"))
 				.Distinct(new InjectionTypeTranslationComparer())
@@ -69,6 +69,8 @@ namespace Elevator.Subtranslator.LabelDecliner
 
 			string prevDefType = "";
 
+			CyrResult currentDeclination = null;
+
 			for (int labelIndex = 0; labelIndex < allLabels.Length;)
 			{
 				Injection injection = allLabels[labelIndex];
@@ -77,18 +79,16 @@ namespace Elevator.Subtranslator.LabelDecliner
 				Console.WriteLine();
 				Console.WriteLine($"{labelIndex + 1}/{allLabels.Length} {injection.DefType} <{injection.DefPath}> \"{label}\":");
 
-				CyrResult declinationResult = null;
-				try
-				{
-					declinationResult = phrase.Decline(label, GetConditionsEnum.Strict);
-					foreach (CasesEnum labelCase in Enum.GetValues(typeof(CasesEnum)))
-					{
-						Console.WriteLine($" {labelCase,15}: {declinationResult.Get(labelCase)}");
-					}
-				}
-				catch
+				if (currentDeclination == null)
+					currentDeclination = DeclineIgnoreSuffix(phrase, label, " (", " из ", " для ", " с ");
+
+				if (currentDeclination == null)
 				{
 					Console.WriteLine($"    Failed to decline");
+				}
+				else
+				{
+					WriteDeclination(currentDeclination);
 				}
 
 				Console.Write("<Enter> - accept; <Space> - edit; <Backspace> - back; <Delete> - ignore");
@@ -101,49 +101,59 @@ namespace Elevator.Subtranslator.LabelDecliner
 						return;
 
 					case ConsoleKey.Spacebar:
-						if (declinationResult == null)
-							declinationResult = new CyrResult(label);
+						if (currentDeclination == null)
+							currentDeclination = new CyrResult(label, label, label, label, label, label);
 
-						foreach (CasesEnum labelCase in Enum.GetValues(typeof(CasesEnum)))
-						{
-							Console.Write($" {labelCase,15}: ");
-							declinationResult.Set(labelCase, ConsoleTools.ReadLine(label));
-						}
+						ReadDeclination(currentDeclination);
+
 						if (injection.DefType != prevDefType)
 						{
-							FileUtil.AppendLine(options.Output, string.Empty);
-							FileUtil.AppendLine(options.Output, "// " + injection.DefType);
+							FileUtil.PushLine(arguments.Output, string.Empty);
+							FileUtil.PushLine(arguments.Output, "// " + injection.DefType);
 						}
-						FileUtil.AppendLine(options.Output, Serialize(declinationResult));
+						FileUtil.PushLine(arguments.Output, DeclinationTools.Serialize(currentDeclination));
+						currentDeclination = null;
 						history.Add(Option.Accept);
 						labelIndex++;
 						break;
 
 					case ConsoleKey.Enter:
-						if (declinationResult != null)
+						if (currentDeclination != null)
 						{
 							if (injection.DefType != prevDefType)
 							{
-								FileUtil.AppendLine(options.Output, string.Empty);
-								FileUtil.AppendLine(options.Output, "// " + injection.DefType);
+								FileUtil.PushLine(arguments.Output, string.Empty);
+								FileUtil.PushLine(arguments.Output, "// " + injection.DefType);
 							}
-							FileUtil.AppendLine(options.Output, Serialize(declinationResult));
+							FileUtil.PushLine(arguments.Output, DeclinationTools.Serialize(currentDeclination));
+							currentDeclination = null;
 							history.Add(Option.Accept);
 							labelIndex++;
 						}
 						break;
 
 					case ConsoleKey.Delete:
-						FileUtil.AppendLine(options.IgnoreFile, FormInjectionLine(injection));
+						FileUtil.PushLine(arguments.IgnoreFile, FormInjectionLine(injection));
+						currentDeclination = null;
 						history.Add(Option.Ignore);
 						labelIndex++;
 						break;
 
 					case ConsoleKey.Backspace:
-						string prevFileName = GetFileForOption(options, history[labelIndex - 1]);
-						FileUtil.DeleteLine(prevFileName);
+						Option prevOption = history[labelIndex - 1];
 						history.RemoveAt(labelIndex - 1);
 						labelIndex--;
+
+						if (prevOption == Option.Accept)
+						{
+							string prevDeclinationLine = FileUtil.PopLine(arguments.Output);
+							currentDeclination = DeclinationTools.Deserialize(prevDeclinationLine);
+						}
+						else if (prevOption == Option.Ignore)
+						{
+							FileUtil.PopLine(arguments.IgnoreFile);
+							currentDeclination = null;
+						}
 						break;
 
 					default:
@@ -152,23 +162,54 @@ namespace Elevator.Subtranslator.LabelDecliner
 
 				prevDefType = injection.DefType;
 			}
-
-
 		}
 
-		private static string Serialize(CyrResult singular)
+		private static CyrResult DeclineIgnoreSuffix(CyrPhrase decliner, string phrase, params string[] ignoreSuffixesStart)
 		{
-			return $"{singular.Nominative}; {singular.Genitive}; {singular.Dative}; {singular.Accusative}; {singular.Instrumental}; {singular.Prepositional}";
+			int openSymbolIndex = phrase.IndexOfAny(ignoreSuffixesStart);
+			if (openSymbolIndex == -1)
+				return DeclinationTools.Decline(decliner, phrase);
+
+			string parenthesisExpr = phrase.Substring(openSymbolIndex, phrase.Length - openSymbolIndex);
+			string parenthesisLessPhrase = phrase.Remove(openSymbolIndex, phrase.Length - openSymbolIndex);
+
+			CyrResult result = DeclinationTools.Decline(decliner, parenthesisLessPhrase);
+			if (result == null)
+				return null;
+
+			foreach (CasesEnum labelCase in Enum.GetValues(typeof(CasesEnum)))
+			{
+				result.Set(labelCase, result.Get(labelCase) + parenthesisExpr);
+			}
+
+			return result;
 		}
 
-		private static string GetFileForOption(Options options, Option option)
+		private static void ReadDeclination(CyrResult declinationResult)
+		{
+			foreach (CasesEnum labelCase in Enum.GetValues(typeof(CasesEnum)))
+			{
+				Console.Write($" {labelCase,15}: ");
+				declinationResult.Set(labelCase, ConsoleTools.ReadLine(declinationResult.Get(labelCase)));
+			}
+		}
+
+		private static void WriteDeclination(CyrResult declinationResult)
+		{
+			foreach (CasesEnum labelCase in Enum.GetValues(typeof(CasesEnum)))
+			{
+				Console.WriteLine($" {labelCase,15}: {declinationResult.Get(labelCase)}");
+			}
+		}
+
+		private static string GetFileForOption(Arguments arguments, Option option)
 		{
 			switch (option)
 			{
 				case Option.Accept:
-					return options.Output;
+					return arguments.Output;
 				case Option.Ignore:
-					return options.IgnoreFile;
+					return arguments.IgnoreFile;
 				default:
 					return null;
 			}
