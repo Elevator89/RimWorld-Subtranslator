@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Xml;
 using System.Xml.Linq;
 
 namespace Elevator.Subtranslator.BackstorySolidAnalyzer
@@ -16,39 +14,17 @@ namespace Elevator.Subtranslator.BackstorySolidAnalyzer
 
 			Dictionary<string, List<SolidPawn>> storyTagMap = GenerateStoryTagMap(solidPawns);
 
-			foreach (XComment comment in backstoryTranslations.Nodes().Where(node => node.NodeType == XmlNodeType.Comment))
-			{
-				string commentXml = "<Commented>" + comment.Value + "</Commented>"; //Create fake root element for paser
-				try
-				{
-					XElement commentedElement = XElement.Parse(commentXml, LoadOptions.PreserveWhitespace);
-
-					foreach (XElement backstory in commentedElement.Elements())
-					{
-						XProcessingInstruction hint;
-						if (GenerateHint(backstory.Name.LocalName, storyTagMap, out hint))
-						{
-							backstory.AddBeforeSelf(hint);
-						}
-					}
-
-					comment.Value = commentedElement.ToString().Replace("<Commented>", "").Replace("</Commented>", "");
-				}
-				catch
-				{
-					continue;
-				}
-			}
+			XText tab = new XText(Environment.NewLine + "\t");
+			XText newLine = new XText(Environment.NewLine);
 
 			foreach (XElement backstory in backstoryTranslations.Elements())
 			{
-				XProcessingInstruction hint;
-				XNode prevSibling = backstory.PreviousNode.PreviousNode;
-				bool hintExists = prevSibling is XProcessingInstruction;
+				XNode prevSibling = backstory.PreviousNode?.PreviousNode;
+				bool hintExists = prevSibling != null && prevSibling is XProcessingInstruction;
 
-				if (!hintExists && GenerateHint(backstory.Name.LocalName, storyTagMap, out hint))
+				if (!hintExists && GenerateHint(backstory.Name.LocalName, storyTagMap, out XProcessingInstruction hint))
 				{
-					backstory.AddBeforeSelf(hint);
+					backstory.AddBeforeSelf(hint, tab);
 				}
 			}
 

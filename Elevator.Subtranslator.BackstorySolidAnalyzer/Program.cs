@@ -51,13 +51,9 @@ namespace Elevator.Subtranslator.BackstorySolidAnalyzer
 				return;
 			}
 
-			XDocument solidPawnsDoc = ReadXml(p.Object.CreationsFileName);
-			XDocument origStoriesDoc = ReadXml(p.Object.BackstoriesInputFileName);
-			XDocument transStoriesDoc = ReadXml(p.Object.TranslatedBackstoriesInputFileName);
-
-			//RemoveOldElements(transStoriesDoc, origStoriesDoc);
-
-			//transStoriesDoc.Save(p.Object.BackstoriesOutputFileName, SaveOptions.None);
+			XDocument solidPawnsDoc = XDocument.Load(p.Object.CreationsFileName, LoadOptions.PreserveWhitespace);
+			XDocument origStoriesDoc = XDocument.Load(p.Object.BackstoriesInputFileName, LoadOptions.PreserveWhitespace);
+			XDocument transStoriesDoc = XDocument.Load(p.Object.TranslatedBackstoriesInputFileName, LoadOptions.PreserveWhitespace);
 
 			Analyzer analyzer = new Analyzer();
 			SolidStoryHiglighter highlighter = new SolidStoryHiglighter();
@@ -66,9 +62,7 @@ namespace Elevator.Subtranslator.BackstorySolidAnalyzer
 			solidPawns = analyzer.FillSolidPawnTags(origStoriesDoc, solidPawns);
 
 			XDocument outputStories = highlighter.HighlightSolidStories(transStoriesDoc, solidPawns);
-
-			string output = outputStories.ToString(SaveOptions.None).Replace("><", ">\r\n\t<"); //Add new line after new ProcessingInstruction tags in order to preserve formatting style
-			File.WriteAllText(p.Object.BackstoriesOutputFileName, output);
+			outputStories.Save(p.Object.BackstoriesOutputFileName, SaveOptions.None);
 		}
 
 		static void FillWithNewElements(XDocument recipient, XDocument donor)
@@ -121,14 +115,5 @@ namespace Elevator.Subtranslator.BackstorySolidAnalyzer
 				recipient.Root.Element(oldTag).Remove();
 			}
 		}
-
-		static XDocument ReadXml(string filename)
-		{
-			using (StreamReader reader = File.OpenText(filename))
-			{
-				return XDocument.Load(reader, LoadOptions.PreserveWhitespace);
-			}
-		}
-
 	}
 }
