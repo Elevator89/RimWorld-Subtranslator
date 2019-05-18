@@ -17,8 +17,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elevator.Subtranslator.Repo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elevator.Subtranslator.ConsiderationApplyer", "Elevator.Subtranslator.ConsiderationApplyer\Elevator.Subtranslator.ConsiderationApplyer.csproj", "{D5366BB1-F07C-4C4A-A5B3-AD2CE33A0B10}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestApp", "TestApp\TestApp.csproj", "{0CE18D98-204C-426E-A578-01BEC65F4337}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elevator.Subtranslator.TagCaseLower", "Elevator.Subtranslator.TagCaseLower\Elevator.Subtranslator.TagCaseLower.csproj", "{9F814537-BAE4-4672-987D-DD38794E4670}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elevator.Subtranslator.BackstoryIssueGenerator", "Elevator.Subtranslator.BackstoryIssueGenerator\Elevator.Subtranslator.BackstoryIssueGenerator.csproj", "{B153E2F1-5109-4E60-AF40-9BF40904992F}"
@@ -71,10 +69,6 @@ Global
 		{D5366BB1-F07C-4C4A-A5B3-AD2CE33A0B10}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D5366BB1-F07C-4C4A-A5B3-AD2CE33A0B10}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D5366BB1-F07C-4C4A-A5B3-AD2CE33A0B10}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0CE18D98-204C-426E-A578-01BEC65F4337}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0CE18D98-204C-426E-A578-01BEC65F4337}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0CE18D98-204C-426E-A578-01BEC65F4337}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0CE18D98-204C-426E-A578-01BEC65F4337}.Release|Any CPU.Build.0 = Release|Any CPU
 		{9F814537-BAE4-4672-987D-DD38794E4670}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{9F814537-BAE4-4672-987D-DD38794E4670}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9F814537-BAE4-4672-987D-DD38794E4670}.Release|Any CPU.ActiveCfg = Release|Any CPU
