@@ -80,7 +80,7 @@ namespace Elevator.Subtranslator.LabelDecliner
 				Console.WriteLine($"{labelIndex + 1}/{allLabels.Length} {injection.DefType} <{injection.DefPath}> \"{label}\":");
 
 				if (currentDeclination == null)
-					currentDeclination = DeclineIgnoreSuffix(phrase, label, " (", " из ", " для ", " с ");
+					currentDeclination = DeclineIgnoreSuffix(phrase, label, " (", " из ", " для ", " с ", " в ");
 
 				if (currentDeclination == null)
 				{
