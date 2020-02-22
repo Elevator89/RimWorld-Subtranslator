@@ -32,20 +32,13 @@ namespace Elevator.Subtranslator.BackstoryReindexer
 		private static string ReplaceVars(string input)
 		{
 			return input
-				.Replace("NAME", "[PAWN_nameDef]")
-				.Replace("HECAP", "[PAWN_pronoun]")
-				.Replace("HE", "[PAWN_pronoun]")
-				.Replace("HISCAP", "[PAWN_possessive]")
-				.Replace("HIS", "[PAWN_possessive]")
-				.Replace("HIMCAP", "[PAWN_objective]")
-				.Replace("HIM", "[PAWN_objective]")
-				//.Replace("hecap", "[PAWN_pronoun]")
-				//.Replace("he", "[PAWN_pronoun]")
-				//.Replace("hiscap", "[PAWN_possessive]")
-				//.Replace("his", "[PAWN_possessive]")
-				//.Replace("himcap", "[PAWN_objective]")
-				//.Replace("him", "[PAWN_objective]")
-				;
+				.Replace("NAME", "{PAWN_nameDef}")
+				.Replace("HECAP", "{PAWN_pronoun}")
+				.Replace("HE", "{PAWN_pronoun}")
+				.Replace("HISCAP", "{PAWN_possessive}")
+				.Replace("HIS", "{PAWN_possessive}")
+				.Replace("HIMCAP", "{PAWN_objective}")
+				.Replace("HIM", "{PAWN_objective}");
 		}
 
         public int GetHashCode(Story obj)

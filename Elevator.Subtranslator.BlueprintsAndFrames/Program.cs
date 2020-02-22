@@ -16,16 +16,13 @@ namespace Elevator.Subtranslator.BlueprintsAndFrames
 		[Option('i', "injections", Required = true, HelpText = "Path to 'DefInjected' folder of target localization.")]
 		public string InjectionsPath { get; set; }
 
-		//[Option('f', "frames", Required = true, HelpText = "Path to '_ThingDef_BlueprintsAndFrames.xml' file of target localization.")]
-		//public string FramesFilePath { get; set; }
-
-		//[Option('a', "append", Required = false, DefaultValue = false, HelpText = "Append new translation lines to current localization or not")]
-		//public bool AppendTranslation { get; set; }
-
 		[Option('r', "report", Required = false, HelpText = "Report file output path.")]
 		public string ReportPath { get; set; }
 	}
 
+    /// <summary>
+    /// Outputs Implied def injections for blueprints and frames. Probably useless
+    /// </summary>
 	class Program
 	{
 		static void Main(string[] args)

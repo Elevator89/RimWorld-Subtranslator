@@ -39,6 +39,9 @@ namespace Elevator.Subtranslator.Reporter
 		}
 	}
 
+    /// <summary>
+    /// Creates a .tsv table with english and russian enries for overall translation readouts
+    /// </summary>
 	class Program
 	{
 		static void Main(string[] args)

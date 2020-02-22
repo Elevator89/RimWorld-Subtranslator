@@ -142,7 +142,8 @@ namespace Elevator.Subtranslator.BackstoryReindexer
 				XElement titleShortFemale = new XElement("titleShortFemale", story.TitleShort);
 				XElement desc = new XElement("desc", story.Description);
 
-				newElement.Add(tab2, title, newLine);
+                newElement.Add(newLine);
+                newElement.Add(tab2, title, newLine);
 				newElement.Add(tab2, titleFemale, newLine);
 				newElement.Add(tab2, titleShort, newLine);
 				newElement.Add(tab2, titleShortFemale, newLine);

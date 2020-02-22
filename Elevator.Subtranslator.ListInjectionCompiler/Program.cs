@@ -14,6 +14,9 @@ namespace Elevator.Subtranslator.ListInjectionCompiler
 		public string XmlFile { get; set; }
 	}
 
+    /// <summary>
+    /// Formats list of lines to XML-structured list
+    /// </summary>
 	class Program
 	{
 		static void Main(string[] args)

@@ -3,21 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.168
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elevator.Subtranslator.Copmarer", "Elevator.Subtranslator.Copmarer\Elevator.Subtranslator.Copmarer.csproj", "{0D56B950-0E7F-4A92-8F71-E4F2D9E33185}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elevator.Subtranslator.BlueprintsAndFrames", "Elevator.Subtranslator.BlueprintsAndFrames\Elevator.Subtranslator.BlueprintsAndFrames.csproj", "{3361A470-FEA4-4B2D-98CD-53D86C7FB3E5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elevator.Subtranslator.Common", "Elevator.Subtranslator.Common\Elevator.Subtranslator.Common.csproj", "{6B08F73A-C27C-4C54-AFA7-AC9574ECFE13}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elevator.Subtranslator.Analyzer", "Elevator.Subtranslator.Analyzer\Elevator.Subtranslator.Analyzer.csproj", "{063E8513-077B-4228-A3D6-D1277E1632D8}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elevator.Subtranslator.ListInjectionCompiler", "Elevator.Subtranslator.ListInjectionCompiler\Elevator.Subtranslator.ListInjectionCompiler.csproj", "{35534CF8-63A7-4404-83D2-AD215CE5D44B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elevator.Subtranslator.Reporter", "Elevator.Subtranslator.Reporter\Elevator.Subtranslator.Reporter.csproj", "{4C46B3E4-F7FC-4383-9F52-C5AA0B589BD8}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elevator.Subtranslator.ConsiderationApplyer", "Elevator.Subtranslator.ConsiderationApplyer\Elevator.Subtranslator.ConsiderationApplyer.csproj", "{D5366BB1-F07C-4C4A-A5B3-AD2CE33A0B10}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elevator.Subtranslator.TagCaseLower", "Elevator.Subtranslator.TagCaseLower\Elevator.Subtranslator.TagCaseLower.csproj", "{9F814537-BAE4-4672-987D-DD38794E4670}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elevator.Subtranslator.BackstoryIssueGenerator", "Elevator.Subtranslator.BackstoryIssueGenerator\Elevator.Subtranslator.BackstoryIssueGenerator.csproj", "{B153E2F1-5109-4E60-AF40-9BF40904992F}"
 EndProject
@@ -41,10 +33,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{0D56B950-0E7F-4A92-8F71-E4F2D9E33185}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0D56B950-0E7F-4A92-8F71-E4F2D9E33185}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0D56B950-0E7F-4A92-8F71-E4F2D9E33185}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0D56B950-0E7F-4A92-8F71-E4F2D9E33185}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3361A470-FEA4-4B2D-98CD-53D86C7FB3E5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3361A470-FEA4-4B2D-98CD-53D86C7FB3E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3361A470-FEA4-4B2D-98CD-53D86C7FB3E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -53,10 +41,6 @@ Global
 		{6B08F73A-C27C-4C54-AFA7-AC9574ECFE13}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6B08F73A-C27C-4C54-AFA7-AC9574ECFE13}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6B08F73A-C27C-4C54-AFA7-AC9574ECFE13}.Release|Any CPU.Build.0 = Release|Any CPU
-		{063E8513-077B-4228-A3D6-D1277E1632D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{063E8513-077B-4228-A3D6-D1277E1632D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{063E8513-077B-4228-A3D6-D1277E1632D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{063E8513-077B-4228-A3D6-D1277E1632D8}.Release|Any CPU.Build.0 = Release|Any CPU
 		{35534CF8-63A7-4404-83D2-AD215CE5D44B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{35534CF8-63A7-4404-83D2-AD215CE5D44B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{35534CF8-63A7-4404-83D2-AD215CE5D44B}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -65,14 +49,6 @@ Global
 		{4C46B3E4-F7FC-4383-9F52-C5AA0B589BD8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4C46B3E4-F7FC-4383-9F52-C5AA0B589BD8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4C46B3E4-F7FC-4383-9F52-C5AA0B589BD8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D5366BB1-F07C-4C4A-A5B3-AD2CE33A0B10}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D5366BB1-F07C-4C4A-A5B3-AD2CE33A0B10}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D5366BB1-F07C-4C4A-A5B3-AD2CE33A0B10}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D5366BB1-F07C-4C4A-A5B3-AD2CE33A0B10}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9F814537-BAE4-4672-987D-DD38794E4670}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9F814537-BAE4-4672-987D-DD38794E4670}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9F814537-BAE4-4672-987D-DD38794E4670}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9F814537-BAE4-4672-987D-DD38794E4670}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B153E2F1-5109-4E60-AF40-9BF40904992F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B153E2F1-5109-4E60-AF40-9BF40904992F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B153E2F1-5109-4E60-AF40-9BF40904992F}.Release|Any CPU.ActiveCfg = Release|Any CPU

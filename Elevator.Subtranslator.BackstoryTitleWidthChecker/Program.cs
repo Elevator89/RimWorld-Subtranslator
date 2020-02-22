@@ -27,6 +27,10 @@ namespace Elevator.Subtranslator.BackstoryTitleWidthChecker
 			public float Width { get; set; }
 		}
 
+        /// <summary>
+        /// Very useful utility to check if width of backstory titles in pixels
+        /// </summary>
+        /// <param name="args"></param>
 		static void Main(string[] args)
 		{
 			// create a generic parser for the ApplicationArguments type
