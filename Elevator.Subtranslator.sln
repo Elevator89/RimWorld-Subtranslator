@@ -19,13 +19,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elevator.Subtranslator.Back
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elevator.Subtranslator.BackstoryTitleWidthChecker", "Elevator.Subtranslator.BackstoryTitleWidthChecker\Elevator.Subtranslator.BackstoryTitleWidthChecker.csproj", "{EC9F27A4-3008-41F4-A4E9-86B4C2E6E26D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elevator.Subtranslator.BackstoryFemalizer", "Elevator.Subtranslator.BackstoryFemalizer\Elevator.Subtranslator.BackstoryFemalizer.csproj", "{3A6DABBB-E7D5-4AB2-AF8E-9114AECEE9FD}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elevator.Subtranslator.LabelGenderer", "Elevator.Subtranslator.LabelGenderer\Elevator.Subtranslator.LabelGenderer.csproj", "{DAE5433E-599F-46A0-AD96-8E6E968227A2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elevator.Subtranslator.LabelRearranger", "Elevator.Subtranslator.LabelRearranger\Elevator.Subtranslator.LabelRearranger.csproj", "{A776728E-18A1-4B02-A93C-F84AB5340EDE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elevator.Subtranslator.LabelDecliner", "Elevator.Subtranslator.LabelDecliner\Elevator.Subtranslator.LabelDecliner.csproj", "{F3A79B03-D1A8-4573-8542-B7276D11983C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elevator.Subtranslator.BackstoryUpdater", "Elevator.Subtranslator.BackstoryUpdater\Elevator.Subtranslator.BackstoryUpdater.csproj", "{531A4085-7066-4DAA-905B-2A6A97724208}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -65,10 +65,6 @@ Global
 		{EC9F27A4-3008-41F4-A4E9-86B4C2E6E26D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EC9F27A4-3008-41F4-A4E9-86B4C2E6E26D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EC9F27A4-3008-41F4-A4E9-86B4C2E6E26D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3A6DABBB-E7D5-4AB2-AF8E-9114AECEE9FD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3A6DABBB-E7D5-4AB2-AF8E-9114AECEE9FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3A6DABBB-E7D5-4AB2-AF8E-9114AECEE9FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3A6DABBB-E7D5-4AB2-AF8E-9114AECEE9FD}.Release|Any CPU.Build.0 = Release|Any CPU
 		{DAE5433E-599F-46A0-AD96-8E6E968227A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{DAE5433E-599F-46A0-AD96-8E6E968227A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DAE5433E-599F-46A0-AD96-8E6E968227A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -81,6 +77,10 @@ Global
 		{F3A79B03-D1A8-4573-8542-B7276D11983C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F3A79B03-D1A8-4573-8542-B7276D11983C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F3A79B03-D1A8-4573-8542-B7276D11983C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{531A4085-7066-4DAA-905B-2A6A97724208}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{531A4085-7066-4DAA-905B-2A6A97724208}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{531A4085-7066-4DAA-905B-2A6A97724208}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{531A4085-7066-4DAA-905B-2A6A97724208}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

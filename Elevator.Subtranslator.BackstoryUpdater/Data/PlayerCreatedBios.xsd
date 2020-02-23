@@ -1,0 +1,98 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="PlayerCreatedBios" attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="PlayerCreatedBios">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="PawnBio" maxOccurs="unbounded" minOccurs="0">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Name" />
+              <xs:element type="xs:string" name="Gender"/>
+              <xs:element type="xs:string" name="PirateKing" minOccurs="0"/>
+              <xs:element name="Childhood" minOccurs="0" >
+                <xs:complexType>
+                  <xs:all>
+                    <xs:element type="xs:string" name="title" minOccurs="0" maxOccurs="1"/>
+                    <xs:element type="xs:string" name="Title" minOccurs="0" maxOccurs="1"/>
+                    <xs:element type="xs:string" name="titleFemale" minOccurs="0" maxOccurs="1"/>
+                    <xs:element type="xs:string" name="TitleFemale" minOccurs="0" maxOccurs="1"/>
+                    <xs:element type="xs:string" name="titleShort" minOccurs="0" maxOccurs="1"/>
+                    <xs:element type="xs:string" name="TitleShort" minOccurs="0" maxOccurs="1"/>
+                    <xs:element type="xs:string" name="titleShortFemale" minOccurs="0" maxOccurs="1"/>
+                    <xs:element type="xs:string" name="TitleShortFemale" minOccurs="0" maxOccurs="1"/>
+                    <xs:element type="xs:string" name="baseDesc" minOccurs="0" maxOccurs="1" />
+                    <xs:element type="xs:string" name="BaseDesc" minOccurs="0" maxOccurs="1" />
+                    <xs:element type="xs:string" name="bodyTypeMale" minOccurs="0" maxOccurs="1" />
+                    <xs:element type="xs:string" name="BodyTypeMale" minOccurs="0" maxOccurs="1" />
+                    <xs:element type="xs:string" name="bodyTypeFemale" minOccurs="0" maxOccurs="1" />
+                    <xs:element type="xs:string" name="BodyTypeFemale" minOccurs="0" maxOccurs="1" />
+                    <xs:element type="xs:string" name="bodyTypeGlobal" minOccurs="0" maxOccurs="1" />
+                    <xs:element type="xs:string" name="BodyTypeGlobal" minOccurs="0" maxOccurs="1" />
+                    <xs:element type="xs:string" name="bodyNameMale" minOccurs="0" maxOccurs="1" />
+                    <xs:element type="xs:string" name="BodyNameMale" minOccurs="0" maxOccurs="1" />
+                    <xs:element type="xs:string" name="bodyNameFemale" minOccurs="0" maxOccurs="1" />
+                    <xs:element type="xs:string" name="BodyNameFemale" minOccurs="0" maxOccurs="1" />
+                    <xs:element type="xs:string" name="bodyNameGlobal" minOccurs="0" maxOccurs="1" />
+                    <xs:element type="xs:string" name="BodyNameGlobal" minOccurs="0" maxOccurs="1" />
+                    <xs:element name="spawnCategories" minOccurs="0" maxOccurs="1"/>
+                    <xs:element name="SpawnCategories" minOccurs="0" maxOccurs="1"/>
+                    <xs:element name="skillGains" minOccurs="0" maxOccurs="1"/>
+                    <xs:element name="SkillGains" minOccurs="0" maxOccurs="1"/>
+                    <xs:element name="requiredWorkTags" minOccurs="0" maxOccurs="1" />
+                    <xs:element name="RequiredWorkTags" minOccurs="0" maxOccurs="1" />
+                    <xs:element name="workDisables" minOccurs="0" maxOccurs="1" />
+                    <xs:element name="WorkDisables" minOccurs="0" maxOccurs="1" />
+                    <xs:element name="forcedTraits" minOccurs="0" maxOccurs="1" />
+                    <xs:element name="ForcedTraits" minOccurs="0" maxOccurs="1" />
+                    <xs:element name="disallowedTraits" minOccurs="0" maxOccurs="1" />
+                    <xs:element name="DisallowedTraits" minOccurs="0" maxOccurs="1" />
+                  </xs:all>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="Adulthood" minOccurs="0" >
+                <xs:complexType>
+                  <xs:all>
+                    <xs:element type="xs:string" name="title" minOccurs="0" maxOccurs="1"/>
+                    <xs:element type="xs:string" name="Title" minOccurs="0" maxOccurs="1"/>
+                    <xs:element type="xs:string" name="titleFemale" minOccurs="0" maxOccurs="1"/>
+                    <xs:element type="xs:string" name="TitleFemale" minOccurs="0" maxOccurs="1"/>
+                    <xs:element type="xs:string" name="titleShort" minOccurs="0" maxOccurs="1"/>
+                    <xs:element type="xs:string" name="TitleShort" minOccurs="0" maxOccurs="1"/>
+                    <xs:element type="xs:string" name="titleShortFemale" minOccurs="0" maxOccurs="1"/>
+                    <xs:element type="xs:string" name="TitleShortFemale" minOccurs="0" maxOccurs="1"/>
+                    <xs:element type="xs:string" name="baseDesc" minOccurs="0" maxOccurs="1" />
+                    <xs:element type="xs:string" name="BaseDesc" minOccurs="0" maxOccurs="1" />
+                    <xs:element type="xs:string" name="bodyTypeMale" minOccurs="0" maxOccurs="1" />
+                    <xs:element type="xs:string" name="BodyTypeMale" minOccurs="0" maxOccurs="1" />
+                    <xs:element type="xs:string" name="bodyTypeFemale" minOccurs="0" maxOccurs="1" />
+                    <xs:element type="xs:string" name="BodyTypeFemale" minOccurs="0" maxOccurs="1" />
+                    <xs:element type="xs:string" name="bodyTypeGlobal" minOccurs="0" maxOccurs="1" />
+                    <xs:element type="xs:string" name="BodyTypeGlobal" minOccurs="0" maxOccurs="1" />
+                    <xs:element type="xs:string" name="bodyNameMale" minOccurs="0" maxOccurs="1" />
+                    <xs:element type="xs:string" name="BodyNameMale" minOccurs="0" maxOccurs="1" />
+                    <xs:element type="xs:string" name="bodyNameFemale" minOccurs="0" maxOccurs="1" />
+                    <xs:element type="xs:string" name="BodyNameFemale" minOccurs="0" maxOccurs="1" />
+                    <xs:element type="xs:string" name="bodyNameGlobal" minOccurs="0" maxOccurs="1" />
+                    <xs:element type="xs:string" name="BodyNameGlobal" minOccurs="0" maxOccurs="1" />
+                    <xs:element name="spawnCategories" minOccurs="0" maxOccurs="1"/>
+                    <xs:element name="SpawnCategories" minOccurs="0" maxOccurs="1"/>
+                    <xs:element name="skillGains" minOccurs="0" maxOccurs="1"/>
+                    <xs:element name="SkillGains" minOccurs="0" maxOccurs="1"/>
+                    <xs:element name="requiredWorkTags" minOccurs="0" maxOccurs="1" />
+                    <xs:element name="RequiredWorkTags" minOccurs="0" maxOccurs="1" />
+                    <xs:element name="workDisables" minOccurs="0" maxOccurs="1" />
+                    <xs:element name="WorkDisables" minOccurs="0" maxOccurs="1" />
+                    <xs:element name="forcedTraits" minOccurs="0" maxOccurs="1" />
+                    <xs:element name="ForcedTraits" minOccurs="0" maxOccurs="1" />
+                    <xs:element name="disallowedTraits" minOccurs="0" maxOccurs="1" />
+                    <xs:element name="DisallowedTraits" minOccurs="0" maxOccurs="1" />
+                  </xs:all>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
