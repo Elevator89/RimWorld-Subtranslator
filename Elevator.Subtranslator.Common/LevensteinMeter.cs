@@ -79,9 +79,11 @@ namespace Elevator.Subtranslator.Common
 
 		public float GetNormedDistanceQ(string a, string b, float maxDist)
 		{
-			int maxDistN = (int)(maxDist * Math.Min(a.Length, b.Length));
-			return GetDistanceQ(a, b, maxDistN);
-		}
+			int length = Math.Min(a.Length, b.Length);
+			int maxDistN = (int)(maxDist * length);
+			int distN = GetDistanceQ(a, b, maxDistN);
+			return (float)distN / length;
+        }
 
 		public int GetDistanceQ(string a, string b, int maxDist)
 		{

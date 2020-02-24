@@ -1,4 +1,5 @@
 ﻿using CommandLine;
+using Elevator.Subtranslator.Common;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -6,7 +7,6 @@ using System.Linq;
 using System.Text;
 using System.Xml.Linq;
 using System.Xml.Schema;
-using Elevator.Subtranslator.Common;
 
 namespace Elevator.Subtranslator.BackstoryUpdater
 {
@@ -15,13 +15,16 @@ namespace Elevator.Subtranslator.BackstoryUpdater
         [Option('r', "resources", Required = true, HelpText = "Path to unpacked Unity_Assets_Files\\resources directory")]
         public string ResourcesDirectory { get; set; }
 
-        [Option('f', "freshBackstories", Required = true, HelpText = "Path to fresh backsoties file")]
+        [Option('f', "freshBackstories", Required = true, HelpText = "Path to fresh backsories file")]
         public string FreshBackstoriesFile { get; set; }
 
-        [Option('t', "translatedBackstories", Required = true, HelpText = "Path to translated backsoties file")]
+        [Option('p', "prevBackstories", Required = false, DefaultValue = "", HelpText = "Path to old backsories file")]
+        public string PrevBackstoriesFile { get; set; }
+
+        [Option('t', "translatedBackstories", Required = true, HelpText = "Path to translated backsories file")]
         public string TranslatedBackstoriesFile { get; set; }
 
-        [Option('o', "outputBackstories", Required = true, HelpText = "Path to translated output backsoties file")]
+        [Option('o', "outputBackstories", Required = true, HelpText = "Path to translated output backsories file")]
         public string OutputBackstories { get; set; }
     }
 
@@ -48,6 +51,15 @@ namespace Elevator.Subtranslator.BackstoryUpdater
             XDocument freshBackstoriesDoc = XDocument.Load(options.FreshBackstoriesFile, LoadOptions.None);
             List<Backstory> freshBackstories = freshBackstoriesDoc.Root.Elements().Select(ReadTranslationBackstory).ToList();
 
+            bool migrate = !string.IsNullOrEmpty(options.PrevBackstoriesFile);
+
+            List<Backstory> prevBackstories = null;
+            if (migrate)
+            {
+                XDocument prevBackstoriesDoc = XDocument.Load(options.PrevBackstoriesFile, LoadOptions.None);
+                prevBackstories = prevBackstoriesDoc.Root.Elements().Select(ReadTranslationBackstory).ToList();
+            }
+
             XDocument translatedBackstoriesDoc = XDocument.Load(options.TranslatedBackstoriesFile, LoadOptions.None);
             List<Backstory> translatedBackstories = translatedBackstoriesDoc.Root.Elements().Select(ReadTranslationBackstory).ToList();
 
@@ -68,7 +80,10 @@ namespace Elevator.Subtranslator.BackstoryUpdater
                     {
                         Backstory backstory = ReadResourceBackstory(backstoryElement);
 
-                        UpdateBackstory(backstory, freshBackstories, translatedBackstories);
+                        if (migrate)
+                            MigrateBackstory(backstory, prevBackstories, freshBackstories, translatedBackstories);
+                        else
+                            UpdateBackstory(backstory, freshBackstories, translatedBackstories);
 
                         outputDoc.Root.Add(_newLine, _tab, new XComment(GetHint(backstory)), _newLine);
                         outputDoc.Root.Add(_tab, GetElement(backstory), _newLine);
@@ -83,14 +98,19 @@ namespace Elevator.Subtranslator.BackstoryUpdater
                 XDocument doc = XDocument.Load(resourceFileName, LoadOptions.None);
                 if (IsValid(doc, playerCreatedBiosSchemaSet))
                 {
-                    outputDoc.Root.Add(_newLine, _tab, new XComment("Solid stories"), _newLine);
-
                     foreach (XElement pawnBioElement in doc.Root.Elements())
                     {
                         if (TryReadPawnBioBackstories(pawnBioElement, out Backstory childBackstory, out Backstory adultBackstory))
                         {
-                            UpdateBackstory(childBackstory, freshBackstories, translatedBackstories);
-                            UpdateBackstory(adultBackstory, freshBackstories, translatedBackstories);
+                            if (migrate)
+                                MigrateBackstory(childBackstory, prevBackstories, freshBackstories, translatedBackstories);
+                            else
+                                UpdateBackstory(childBackstory, freshBackstories, translatedBackstories);
+
+                            if (migrate)
+                                MigrateBackstory(adultBackstory, prevBackstories, freshBackstories, translatedBackstories);
+                            else
+                                UpdateBackstory(adultBackstory, freshBackstories, translatedBackstories);
 
                             outputDoc.Root.Add(_newLine, _tab, new XComment($" {GetHint(childBackstory)} "), _newLine);
                             outputDoc.Root.Add(_tab, GetElement(childBackstory), _newLine);
@@ -115,10 +135,10 @@ namespace Elevator.Subtranslator.BackstoryUpdater
 
         private static void UpdateBackstory(Backstory backstory, IEnumerable<Backstory> freshBackstories, IEnumerable<Backstory> translatedBackstories)
         {
-            Backstory freshBackstory = freshBackstories.First(fresh => fresh.Title == backstory.Title && fresh.TitleShort == backstory.TitleShort && fresh.Description == backstory.Description);
+            Backstory freshBackstory = freshBackstories.First(fresh => BackstoriesAreEqual(fresh, backstory));
             backstory.Id = freshBackstory.Id;
 
-            Backstory translatedBackstory = translatedBackstories.First(translated => translated.Id == backstory.Id);
+            Backstory translatedBackstory = translatedBackstories.First(translated => translated.Id == freshBackstory.Id);
             backstory.Title = translatedBackstory.Title;
             backstory.TitleShort = translatedBackstory.TitleShort;
             backstory.TitleFemale = translatedBackstory.TitleFemale;
@@ -126,6 +146,36 @@ namespace Elevator.Subtranslator.BackstoryUpdater
             backstory.Description = translatedBackstory.Description;
         }
 
+        private static void MigrateBackstory(Backstory backstory, IEnumerable<Backstory> prevBackstories, IEnumerable<Backstory> freshBackstories, IEnumerable<Backstory> translatedBackstories)
+        {
+            Backstory freshBackstory = freshBackstories.First(fresh => BackstoriesAreEqual(fresh, backstory));
+            Backstory prevBackstory = prevBackstories.FirstOrDefault(prev => BackstoriesAreEqual(prev, backstory));
+
+            backstory.Id = freshBackstory.Id;
+
+            if (prevBackstory == null)
+            {
+                Console.WriteLine($"NEW {backstory.Id} {backstory.Title} {backstory.Title} {backstory.Description}");
+            }
+            else
+            {
+                Backstory translatedBackstory = translatedBackstories.First(translated => translated.Id == prevBackstory.Id);
+                backstory.Title = translatedBackstory.Title;
+                backstory.TitleShort = translatedBackstory.TitleShort;
+                backstory.TitleFemale = translatedBackstory.TitleFemale;
+                backstory.TitleShortFemale = translatedBackstory.TitleShortFemale;
+                backstory.Description = translatedBackstory.Description;
+            }
+        }
+
+        private static LevenshteinMeter _levenshteinMeter = new LevenshteinMeter(1, 1, 1);
+
+        private static bool BackstoriesAreEqual(Backstory a, Backstory b)
+        {
+            return
+                string.Equals(a.Title, b.Title, StringComparison.InvariantCultureIgnoreCase) &&
+                _levenshteinMeter.GetNormedDistanceQ(a.Description, b.Description, 0.2f) < 0.1f;
+        }
 
         private static bool TryReadPawnBioBackstories(XElement bioElem, out Backstory child, out Backstory adult)
         {
