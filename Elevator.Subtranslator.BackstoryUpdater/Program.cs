@@ -40,23 +40,47 @@ namespace Elevator.Subtranslator.BackstoryUpdater
             Dictionary<string, Backstory> translatedBackstories = translatedBackstoriesDoc.Root.Elements().Select(ReadTranslationBackstory).ToDictionary(backstory => backstory.Id);
 
             XDocument outputDoc = new XDocument();
-            XElement root = new XElement("Backstories");
+            XElement root = new XElement("BackstoryTranslations");
             outputDoc.Add(root);
+            outputDoc.Root.Add(_newLine);
 
             foreach (CategorizedBackstories categorizedBackstories in GetAllResourceBackstories(options.ResourcesDirectory))
             {
-                outputDoc.Root.Add(_newLine, _tab, new XComment(categorizedBackstories.Category), _newLine);
+                outputDoc.Root.Add(_newLine);
+                outputDoc.Root.Add(_tab, new XComment($" Category: {categorizedBackstories.Category} "), _newLine);
 
                 foreach (Backstory backstory in categorizedBackstories)
                 {
                     if (translatedBackstories.TryGetValue(backstory.Id, out Backstory translatedBackstory))
                     {
-                        outputDoc.Root.Add(_newLine, _tab, new XComment(GetHint(backstory)), _newLine);
-                        outputDoc.Root.Add(_tab, GetElementWithEnglishComments(backstory, translatedBackstory), _newLine);
+                        outputDoc.Root.Add(_newLine);
+                        outputDoc.Root.Add(_tab, new XComment($" {GetHint(backstory)} "), _newLine);
+                        outputDoc.Root.Add(_tab, GetTranslatedElementWithEnglishComments(backstory, translatedBackstory), _newLine);
+                        translatedBackstories.Remove(backstory.Id);
+                    }
+                    else
+                    {
+                        outputDoc.Root.Add(_newLine);
+                        outputDoc.Root.Add(_tab, new XComment($" {GetHint(backstory)} "), _newLine);
+                        outputDoc.Root.Add(_tab, GetTodoElementWithEnglishComments(backstory), _newLine);
                     }
                 }
             }
 
+            if (translatedBackstories.Count > 0)
+            {
+                outputDoc.Root.Add(_newLine);
+                outputDoc.Root.Add(_tab, new XComment($" Translated but unused "), _newLine);
+
+                foreach (Backstory translatedBackstory in translatedBackstories.Values)
+                {
+                    outputDoc.Root.Add(_newLine);
+                    outputDoc.Root.Add(_tab, new XComment($" {GetHint(translatedBackstory)} "), _newLine);
+                    outputDoc.Root.Add(_tab, GetElement(translatedBackstory), _newLine);
+                }
+            }
+
+            outputDoc.Root.Add(_newLine);
             outputDoc.Save(options.OutputBackstories, SaveOptions.None);
         }
 
@@ -127,9 +151,6 @@ namespace Elevator.Subtranslator.BackstoryUpdater
             child = ReadResourceBackstory(childhoodElement);
             adult = ReadResourceBackstory(adulthoodElement);
 
-            child.Id = Backstory.GetIdentifier(child);
-            adult.Id = Backstory.GetIdentifier(adult);
-
             child.Slot = BackstorySlot.Childhood;
             adult.Slot = BackstorySlot.Adulthood;
 
@@ -143,15 +164,26 @@ namespace Elevator.Subtranslator.BackstoryUpdater
 
         private static Backstory ReadResourceBackstory(XElement storyElem)
         {
-            return new Backstory()
+            Backstory backstory = new Backstory()
             {
                 Title = storyElem.Element("title", true).Value,
                 TitleFemale = storyElem.Element("titleFemale", true)?.Value,
                 TitleShort = storyElem.Element("titleShort", true).Value,
                 TitleShortFemale = storyElem.Element("titleShortFemale", true)?.Value,
-                Description = storyElem.Element("baseDesc", true).Value.FixNewLines().Trim(),
+                Description = storyElem.Element("baseDesc", true).Value,
                 Slot = ParseSlot(storyElem)
             };
+
+            //Like in RimWorld.Backstory.PostLoad
+            backstory.Description = backstory.Description.TrimEnd();
+            backstory.Description = backstory.Description.Replace("\\r", "\r");
+            backstory.Description = backstory.Description.Replace("\\n", "\n");
+            backstory.Description = backstory.Description.Replace("\r", "");
+
+            backstory.Id = Backstory.GetIdentifier(backstory);
+
+            backstory.Description = backstory.Description.FixNewLines().Trim();
+            return backstory;
         }
 
         private static Backstory ReadTranslationBackstory(XElement storyElem)
@@ -196,47 +228,74 @@ namespace Elevator.Subtranslator.BackstoryUpdater
             return backstoryElement;
         }
 
-        private static XElement GetElementWithEnglishComments(Backstory originalBackstory, Backstory translatedBackstory)
+        private static XElement GetTranslatedElementWithEnglishComments(Backstory originalBackstory, Backstory translatedBackstory)
         {
             XElement backstoryElement = new XElement(translatedBackstory.Id);
 
             backstoryElement.Add(_newLine);
 
-            backstoryElement.Add(_tab2, new XComment(originalBackstory.Title), _newLine);
+            backstoryElement.Add(_tab2, new XComment($" EN: {originalBackstory.Title} "), _newLine);
             backstoryElement.Add(_tab2, new XElement("title", translatedBackstory.Title), _newLine);
 
             if (!string.IsNullOrEmpty(originalBackstory.TitleFemale))
-                backstoryElement.Add(_tab2, new XComment(originalBackstory.TitleFemale), _newLine);
+                backstoryElement.Add(_tab2, new XComment($" EN: {originalBackstory.TitleFemale} "), _newLine);
             backstoryElement.Add(_tab2, new XElement("titleFemale", translatedBackstory.TitleFemale ?? translatedBackstory.Title), _newLine);
 
-            backstoryElement.Add(_tab2, new XComment(originalBackstory.TitleShort), _newLine);
+            backstoryElement.Add(_tab2, new XComment($" EN: {originalBackstory.TitleShort} "), _newLine);
             backstoryElement.Add(_tab2, new XElement("titleShort", translatedBackstory.TitleShort), _newLine);
 
             if (!string.IsNullOrEmpty(originalBackstory.TitleFemale))
-                backstoryElement.Add(_tab2, new XComment(originalBackstory.TitleShortFemale), _newLine);
+                backstoryElement.Add(_tab2, new XComment($" EN: {originalBackstory.TitleShortFemale} "), _newLine);
             backstoryElement.Add(_tab2, new XElement("titleShortFemale", translatedBackstory.TitleShortFemale ?? translatedBackstory.TitleShort), _newLine);
 
-            backstoryElement.Add(_tab2, new XComment(originalBackstory.Description), _newLine);
-            backstoryElement.Add(_tab2, new XElement("desc", translatedBackstory.Description), _newLine, _tab);
+            backstoryElement.Add(_tab2, new XComment($" EN: {originalBackstory.Description} "), _newLine);
+            backstoryElement.Add(_tab2, new XElement("desc", translatedBackstory.Description), _newLine);
+            backstoryElement.Add(_tab);
 
             return backstoryElement;
         }
 
+        private static XElement GetTodoElementWithEnglishComments(Backstory originalBackstory)
+        {
+            XElement backstoryElement = new XElement(originalBackstory.Id);
+
+            backstoryElement.Add(_newLine);
+
+            backstoryElement.Add(_tab2, new XComment($" EN: {originalBackstory.Title} "), _newLine);
+            backstoryElement.Add(_tab2, new XElement("title", "TODO"), _newLine);
+
+            if (!string.IsNullOrEmpty(originalBackstory.TitleFemale))
+                backstoryElement.Add(_tab2, new XComment($" EN: {originalBackstory.TitleFemale} "), _newLine);
+            backstoryElement.Add(_tab2, new XElement("titleFemale", "TODO"), _newLine);
+
+            backstoryElement.Add(_tab2, new XComment($" EN: {originalBackstory.TitleShort} "), _newLine);
+            backstoryElement.Add(_tab2, new XElement("titleShort", "TODO"), _newLine);
+
+            if (!string.IsNullOrEmpty(originalBackstory.TitleFemale))
+                backstoryElement.Add(_tab2, new XComment($" EN: {originalBackstory.TitleShortFemale} "), _newLine);
+            backstoryElement.Add(_tab2, new XElement("titleShortFemale", "TODO"), _newLine);
+
+            backstoryElement.Add(_tab2, new XComment($" EN: {originalBackstory.Description} "), _newLine);
+            backstoryElement.Add(_tab2, new XElement("desc", "TODO"), _newLine);
+            backstoryElement.Add(_tab);
+
+            return backstoryElement;
+        }
         private static string GetHint(Backstory backstory)
         {
             StringBuilder hintBuilder = new StringBuilder();
 
-            if (backstory.FirstName != null)
+            if (!string.IsNullOrEmpty(backstory.FirstName))
             {
                 hintBuilder.Append($"{backstory.FirstName} ");
 
-                if (backstory.NickName != null)
+                if (!string.IsNullOrEmpty(backstory.NickName))
                     hintBuilder.Append($"\"{backstory.NickName}\" ");
 
                 hintBuilder.Append($"{backstory.LastName}");
             }
 
-            if (backstory.Gender != null)
+            if (!string.IsNullOrEmpty(backstory.Gender))
                 hintBuilder.Append($", {backstory.Gender}, ");
 
             hintBuilder.Append($"{backstory.Slot}");
