@@ -43,32 +43,36 @@ namespace Elevator.Subtranslator.BackstoryUpdater
             XDocument translatedBackstoriesDoc = XDocument.Load(options.TranslatedBackstoriesFile, LoadOptions.None);
             Dictionary<string, Backstory> translatedBackstories = translatedBackstoriesDoc.Root.Elements().Select(XmlHelper.ReadBackstoryElementTranslated).ToDictionary(backstory => backstory.Id);
 
+            bool migrate = !string.IsNullOrEmpty(options.ResourcesDirectoryPrev);
+
+            List<Backstory> regularBackstories = LoadResourceBackstoriesRegular(options.ResourcesDirectory).OrderBy(bs => bs.Id).ToList();
+            List<Backstory> solidBackstories = LoadResourceBackstoriesSolid(options.ResourcesDirectory).OrderBy(bs => bs.FirstName + bs.LastName).ThenBy(bs => (int)bs.Slot).ToList();
+
+            Dictionary<string, string> newToOldIds = null;
+            if (migrate)
+            {
+                HashSet<Backstory> backstoriesPrevRegular = new HashSet<Backstory>(LoadResourceBackstoriesRegular(options.ResourcesDirectoryPrev), new BackstoryEqualityComparer());
+                HashSet<Backstory> backstoriesPrevSolid = new HashSet<Backstory>(LoadResourceBackstoriesSolid(options.ResourcesDirectoryPrev), new BackstoryEqualityComparer());
+
+                newToOldIds = new Dictionary<string, string>();
+                FillBackstoryMigrationMap(backstoriesPrevRegular, regularBackstories, newToOldIds);
+                Console.WriteLine();
+                FillBackstoryMigrationMap(backstoriesPrevSolid, solidBackstories, newToOldIds);
+                Console.WriteLine();
+            }
+
             XDocument outputDoc = new XDocument();
             XElement root = new XElement("BackstoryTranslations");
             outputDoc.Add(root);
             outputDoc.Root.Add(XmlHelper.NewLine);
 
-            bool migrate = !string.IsNullOrEmpty(options.ResourcesDirectoryPrev);
-
-            HashSet<Backstory> backstoriesPrev = migrate ? new HashSet<Backstory>(GetAllResourceBackstories(options.ResourcesDirectoryPrev), new BackstoryEqualityComparer()) : null;
-
-            List<Backstory> orderedBackstories = OrderBackstories(GetAllResourceBackstories(options.ResourcesDirectory)).ToList();
-            for (int i = 0; i < orderedBackstories.Count; ++i)
+            foreach (Backstory backstory in regularBackstories.Concat(solidBackstories))
             {
-                Console.Write($"\rProcessing: {i + 1}/{orderedBackstories.Count}");
-
-                Backstory backstory = orderedBackstories[i];
-
                 string currentBackstoryId = null;
 
                 if (migrate)
                 {
-                    Backstory bestMatchPrevBackstory = FindBestMatch(backstoriesPrev, backstory);
-                    if (bestMatchPrevBackstory != null)
-                    {
-                        currentBackstoryId = bestMatchPrevBackstory.Id;
-                        backstoriesPrev.Remove(bestMatchPrevBackstory);
-                    }
+                    newToOldIds.TryGetValue(backstory.Id, out currentBackstoryId);
                 }
                 else
                 {
@@ -86,7 +90,6 @@ namespace Elevator.Subtranslator.BackstoryUpdater
                 }
             }
 
-
             if (translatedBackstories.Count > 0)
             {
                 outputDoc.Root.Add(XmlHelper.NewLine);
@@ -102,76 +105,32 @@ namespace Elevator.Subtranslator.BackstoryUpdater
             outputDoc.Save(options.OutputBackstories, SaveOptions.None);
         }
 
-        private static void AddBackstoryElementWithHint(XDocument outputDoc, string hint, XElement backsotyElement)
+        private static void FillBackstoryMigrationMap(HashSet<Backstory> prevBackstories, IEnumerable<Backstory> backstories, Dictionary<string, string> newToOldIds)
+        {
+            int count = backstories.Count();
+            int i = 0;
+
+            foreach (Backstory backstory in backstories)
+            {
+                Console.Write($"\rMapping: {++i}/{count}");
+
+                Backstory bestMatchPrevBackstory = FindBestMatch(prevBackstories, backstory);
+                if (bestMatchPrevBackstory != null)
+                {
+                    newToOldIds[backstory.Id] = bestMatchPrevBackstory.Id;
+                    prevBackstories.Remove(bestMatchPrevBackstory);
+                }
+            }
+        }
+
+        private static void AddBackstoryElementWithHint(XDocument outputDoc, string hint, XElement backstoryElement)
         {
             outputDoc.Root.Add(XmlHelper.NewLine);
 
             if (!string.IsNullOrEmpty(hint))
                 outputDoc.Root.Add(XmlHelper.Tab, new XComment($" {hint} "), XmlHelper.NewLine);
 
-            outputDoc.Root.Add(XmlHelper.Tab, XmlHelper.BuildBackstoryElementTodoWithEnglishComments(backstory), XmlHelper.NewLine);
-        }
-
-        public static IEnumerable<Backstory> OrderBackstories(IEnumerable<Backstory> backstories)
-        {
-            backstories.Divide(bs => Backstory.IsSolid(bs), out List<Backstory> solid, out List<Backstory> regular);
-
-            regular = regular.OrderBy(bs => bs.Id).ToList();
-            solid = solid.OrderBy(bs => bs.FirstName + bs.LastName).ThenBy(bs => (int)bs.Slot).ToList();
-
-            foreach (Backstory backstory in regular)
-                yield return backstory;
-
-            foreach (Backstory backstory in solid)
-                yield return backstory;
-        }
-
-        public static IEnumerable<Backstory> GetAllResourceBackstories(string resourcesDirectory)
-        {
-            XmlSchemaSet backstoriesSchemaSet = new XmlSchemaSet();
-            backstoriesSchemaSet.Add(XmlSchema.Read(new StringReader(Properties.Resources.BackstoriesSchema), ValidateSchema));
-
-            XmlSchemaSet playerCreatedBiosSchemaSet = new XmlSchemaSet();
-            playerCreatedBiosSchemaSet.Add(XmlSchema.Read(new StringReader(Properties.Resources.PlayerCreatedBiosSchema), ValidateSchema));
-
-            foreach (string resourceFileName in Directory.EnumerateFiles(resourcesDirectory, "*.xml", SearchOption.TopDirectoryOnly))
-            {
-                XDocument doc = XDocument.Load(resourceFileName, LoadOptions.None);
-                if (XmlHelper.IsValid(doc, backstoriesSchemaSet))
-                {
-                    string category = Path.GetFileNameWithoutExtension(resourceFileName);
-
-                    foreach (XElement element in doc.Root.Elements())
-                    {
-                        Backstory backstory = XmlHelper.ReadBackstoryElementResource(element);
-                        backstory.Category = category;
-                        yield return backstory;
-                    }
-                }
-            }
-
-            foreach (string resourceFileName in Directory.EnumerateFiles(resourcesDirectory, "*.xml", SearchOption.TopDirectoryOnly))
-            {
-                string fileName = Path.GetFileName(resourceFileName);
-
-                XDocument doc = XDocument.Load(resourceFileName, LoadOptions.None);
-                if (XmlHelper.IsValid(doc, playerCreatedBiosSchemaSet))
-                {
-                    string category = Path.GetFileNameWithoutExtension(resourceFileName);
-
-                    foreach (XElement pawnBioElement in doc.Root.Elements())
-                    {
-                        if (XmlHelper.TryReadPawnBioBackstories(pawnBioElement, out Backstory childBackstory, out Backstory adultBackstory))
-                        {
-                            childBackstory.Category = category;
-                            adultBackstory.Category = category;
-
-                            yield return childBackstory;
-                            yield return adultBackstory;
-                        }
-                    }
-                }
-            }
+            outputDoc.Root.Add(XmlHelper.Tab, backstoryElement, XmlHelper.NewLine);
         }
 
         private static Backstory FindBestMatch(HashSet<Backstory> backstories, Backstory backstory)
@@ -182,7 +141,7 @@ namespace Elevator.Subtranslator.BackstoryUpdater
             if (matchById != null)
                 return matchById;
 
-            if (backstory.FirstName != null && backstory.LastName != null)
+            if (Backstory.IsSolid(backstory))
             {
                 Backstory matchBySolidName = backstories.FirstOrDefault(bs => bs.FirstName == backstory.FirstName && bs.LastName == backstory.LastName && bs.Slot == backstory.Slot);
 
@@ -225,6 +184,57 @@ namespace Elevator.Subtranslator.BackstoryUpdater
             }
 
             return hintBuilder.ToString();
+        }
+
+        private static IEnumerable<Backstory> LoadResourceBackstoriesRegular(string resourcesDirectory)
+        {
+            XmlSchemaSet backstoriesSchemaSet = new XmlSchemaSet();
+            backstoriesSchemaSet.Add(XmlSchema.Read(new StringReader(Properties.Resources.BackstoriesSchema), ValidateSchema));
+
+            foreach (string resourceFileName in Directory.EnumerateFiles(resourcesDirectory, "*.xml", SearchOption.TopDirectoryOnly))
+            {
+                XDocument doc = XDocument.Load(resourceFileName, LoadOptions.None);
+                if (XmlHelper.IsValid(doc, backstoriesSchemaSet))
+                {
+                    string category = Path.GetFileNameWithoutExtension(resourceFileName);
+
+                    foreach (XElement element in doc.Root.Elements())
+                    {
+                        Backstory backstory = XmlHelper.ReadBackstoryElementResource(element);
+                        backstory.Category = category;
+                        yield return backstory;
+                    }
+                }
+            }
+        }
+
+        private static IEnumerable<Backstory> LoadResourceBackstoriesSolid(string resourcesDirectory)
+        {
+            XmlSchemaSet playerCreatedBiosSchemaSet = new XmlSchemaSet();
+            playerCreatedBiosSchemaSet.Add(XmlSchema.Read(new StringReader(Properties.Resources.PlayerCreatedBiosSchema), ValidateSchema));
+
+            foreach (string resourceFileName in Directory.EnumerateFiles(resourcesDirectory, "*.xml", SearchOption.TopDirectoryOnly))
+            {
+                string fileName = Path.GetFileName(resourceFileName);
+
+                XDocument doc = XDocument.Load(resourceFileName, LoadOptions.None);
+                if (XmlHelper.IsValid(doc, playerCreatedBiosSchemaSet))
+                {
+                    string category = Path.GetFileNameWithoutExtension(resourceFileName);
+
+                    foreach (XElement pawnBioElement in doc.Root.Elements())
+                    {
+                        if (XmlHelper.TryReadPawnBioBackstories(pawnBioElement, out Backstory childBackstory, out Backstory adultBackstory))
+                        {
+                            childBackstory.Category = category;
+                            adultBackstory.Category = category;
+
+                            yield return childBackstory;
+                            yield return adultBackstory;
+                        }
+                    }
+                }
+            }
         }
 
         private static void ValidateSchema(object sender, ValidationEventArgs e)
