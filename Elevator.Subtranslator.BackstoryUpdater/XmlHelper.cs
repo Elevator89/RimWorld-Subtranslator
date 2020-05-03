@@ -136,9 +136,15 @@ namespace Elevator.Subtranslator.BackstoryUpdater
 
             backstoryElement.Add(NewLine);
             backstoryElement.Add(Tab2, new XElement("title", backstory.Title), NewLine);
-            backstoryElement.Add(Tab2, new XElement("titleFemale", backstory.TitleFemale ?? backstory.Title), NewLine);
+
+            if (!string.IsNullOrEmpty(backstory.TitleFemale))
+                backstoryElement.Add(Tab2, new XElement("titleFemale", backstory.TitleFemale), NewLine);
+
             backstoryElement.Add(Tab2, new XElement("titleShort", backstory.TitleShort), NewLine);
-            backstoryElement.Add(Tab2, new XElement("titleShortFemale", backstory.TitleShortFemale ?? backstory.TitleShort), NewLine);
+
+            if (!string.IsNullOrEmpty(backstory.TitleShortFemale))
+                backstoryElement.Add(Tab2, new XElement("titleShortFemale", backstory.TitleShortFemale), NewLine);
+
             backstoryElement.Add(Tab2, new XElement("desc", backstory.Description), NewLine, Tab);
 
             return backstoryElement;
@@ -154,15 +160,23 @@ namespace Elevator.Subtranslator.BackstoryUpdater
             backstoryElement.Add(Tab2, new XElement("title", translatedBackstory.Title), NewLine);
 
             if (!string.IsNullOrEmpty(originalBackstory.TitleFemale))
+            {
                 backstoryElement.Add(Tab2, new XComment($" EN: {originalBackstory.TitleFemale} "), NewLine);
-            backstoryElement.Add(Tab2, new XElement("titleFemale", translatedBackstory.TitleFemale ?? translatedBackstory.Title), NewLine);
+                backstoryElement.Add(Tab2, new XElement("titleFemale", translatedBackstory.TitleFemale ?? "TODO"), NewLine);
+            }
+            else if (!string.IsNullOrEmpty(translatedBackstory.TitleFemale))
+                backstoryElement.Add(Tab2, new XElement("titleFemale", translatedBackstory.TitleFemale), NewLine);
 
             backstoryElement.Add(Tab2, new XComment($" EN: {originalBackstory.TitleShort} "), NewLine);
             backstoryElement.Add(Tab2, new XElement("titleShort", translatedBackstory.TitleShort), NewLine);
 
-            if (!string.IsNullOrEmpty(originalBackstory.TitleFemale))
+            if (!string.IsNullOrEmpty(originalBackstory.TitleShortFemale))
+            {
                 backstoryElement.Add(Tab2, new XComment($" EN: {originalBackstory.TitleShortFemale} "), NewLine);
-            backstoryElement.Add(Tab2, new XElement("titleShortFemale", translatedBackstory.TitleShortFemale ?? translatedBackstory.TitleShort), NewLine);
+                backstoryElement.Add(Tab2, new XElement("titleShortFemale", translatedBackstory.TitleShortFemale ?? "TODO"), NewLine);
+            }
+            else if (!string.IsNullOrEmpty(translatedBackstory.TitleShortFemale))
+                backstoryElement.Add(Tab2, new XElement("titleShortFemale", translatedBackstory.TitleShortFemale), NewLine);
 
             backstoryElement.Add(Tab2, new XComment($" EN: {originalBackstory.Description} "), NewLine);
             backstoryElement.Add(Tab2, new XElement("desc", translatedBackstory.Description), NewLine);
