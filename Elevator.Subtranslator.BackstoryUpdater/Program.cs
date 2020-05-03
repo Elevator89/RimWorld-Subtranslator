@@ -27,8 +27,8 @@ namespace Elevator.Subtranslator.BackstoryUpdater
     }
 
     /// <summary>
-    /// -p "G:\Rimworld translation\_Tools\resources-2408\Unity_Assets_Files\resources" -r "G:\Rimworld translation\_Tools\resources\Unity_Assets_Files\resources" -t "G:\Rimworld translation\_Translation\RimWorld-ru\Core\Backstories\Backstories.xml" -o "G:\Rimworld translation\_Translation\RimWorld-ru\Core\Backstories\Backstories-new.xml"
     /// -r "G:\Rimworld translation\_Tools\resources-2408\Unity_Assets_Files\resources" -t "G:\Rimworld translation\_Translation\RimWorld-ru\Core\Backstories\Backstories.xml" -o "G:\Rimworld translation\_Translation\RimWorld-ru\Core\Backstories\Backstories-new.xml"
+    /// -p "G:\Rimworld translation\_Tools\resources-2408\Unity_Assets_Files\resources" -r "G:\Rimworld translation\_Tools\resources\Unity_Assets_Files\resources" -t "G:\Rimworld translation\_Translation\RimWorld-ru\Core\Backstories\Backstories.xml" -o "G:\Rimworld translation\_Translation\RimWorld-ru\Core\Backstories\Backstories-new.xml"
     /// </summary>
     class Program
     {
@@ -41,24 +41,57 @@ namespace Elevator.Subtranslator.BackstoryUpdater
             Options options = parseResult.Value;
 
             XDocument translatedBackstoriesDoc = XDocument.Load(options.TranslatedBackstoriesFile, LoadOptions.None);
-            Dictionary<string, Backstory> translatedBackstories = translatedBackstoriesDoc.Root.Elements().Select(XmlHelper.ReadBackstoryElementTranslated).ToDictionary(backstory => backstory.Id);
+            List<Backstory> translatedBackstories = translatedBackstoriesDoc.Root.Elements().Select(XmlHelper.ReadBackstoryElementTranslated).ToList();
 
             bool migrate = !string.IsNullOrEmpty(options.ResourcesDirectoryPrev);
 
-            List<Backstory> regularBackstories = LoadResourceBackstoriesRegular(options.ResourcesDirectory).OrderBy(bs => bs.Id).ToList();
-            List<Backstory> solidBackstories = LoadResourceBackstoriesSolid(options.ResourcesDirectory).OrderBy(bs => bs.FirstName + bs.LastName).ThenBy(bs => (int)bs.Slot).ToList();
+            Dictionary<string, Backstory> regularBackstories = LoadResourceBackstoriesRegular(options.ResourcesDirectory).OrderBy(bs => bs.Id).ToDictionary(bs => bs.Id);
+            Dictionary<string, Backstory> solidBackstories = LoadResourceBackstoriesSolid(options.ResourcesDirectory).OrderBy(bs => bs.FirstName + bs.LastName).ThenBy(bs => (int)bs.Slot).ToDictionary(bs => bs.Id);
 
-            Dictionary<string, string> newToOldIds = null;
+            Dictionary<string, string> oldToNewIdsRegular = null;
+            Dictionary<string, string> oldToNewIdsSolid = null;
             if (migrate)
             {
                 HashSet<Backstory> backstoriesPrevRegular = new HashSet<Backstory>(LoadResourceBackstoriesRegular(options.ResourcesDirectoryPrev), new BackstoryEqualityComparer());
                 HashSet<Backstory> backstoriesPrevSolid = new HashSet<Backstory>(LoadResourceBackstoriesSolid(options.ResourcesDirectoryPrev), new BackstoryEqualityComparer());
 
-                newToOldIds = new Dictionary<string, string>();
-                FillBackstoryMigrationMap(backstoriesPrevRegular, regularBackstories, newToOldIds);
+                oldToNewIdsRegular = new Dictionary<string, string>();
+                FillBackstoryMigrationMap(backstoriesPrevRegular, regularBackstories.Values, oldToNewIdsRegular);
                 Console.WriteLine();
-                FillBackstoryMigrationMap(backstoriesPrevSolid, solidBackstories, newToOldIds);
+                oldToNewIdsSolid = new Dictionary<string, string>();
+                FillBackstoryMigrationMap(backstoriesPrevSolid, solidBackstories.Values, oldToNewIdsSolid);
                 Console.WriteLine();
+            }
+
+            List<Backstory> backstoriesTranslatedRegular = new List<Backstory>();
+            List<Backstory> backstoriesTranslatedSolid = new List<Backstory>();
+            List<Backstory> backstoriesTranslatedUnused = new List<Backstory>();
+
+            foreach (Backstory translatedBackstory in translatedBackstories)
+            {
+                string resourceBackstoryIdRegular = translatedBackstory.Id;
+                string resourceBackstoryIdSolid = translatedBackstory.Id;
+
+                if (migrate)
+                {
+                    oldToNewIdsRegular.TryGetValue(translatedBackstory.Id, out resourceBackstoryIdRegular);
+                    oldToNewIdsSolid.TryGetValue(translatedBackstory.Id, out resourceBackstoryIdSolid);
+                }
+
+                if (resourceBackstoryIdRegular != null && regularBackstories.TryGetValue(resourceBackstoryIdRegular, out Backstory regularBackstory))
+                {
+                    translatedBackstory.Id = resourceBackstoryIdRegular;
+                    backstoriesTranslatedRegular.Add(translatedBackstory);
+                }
+                else if (resourceBackstoryIdSolid != null && solidBackstories.TryGetValue(resourceBackstoryIdSolid, out Backstory solidBackstory))
+                {
+                    translatedBackstory.Id = resourceBackstoryIdSolid;
+                    backstoriesTranslatedSolid.Add(translatedBackstory);
+                }
+                else
+                {
+                    backstoriesTranslatedUnused.Add(translatedBackstory);
+                }
             }
 
             XDocument outputDoc = new XDocument();
@@ -66,46 +99,37 @@ namespace Elevator.Subtranslator.BackstoryUpdater
             outputDoc.Add(root);
             outputDoc.Root.Add(XmlHelper.NewLine);
 
-            foreach (Backstory backstory in regularBackstories.Concat(solidBackstories))
+            foreach (Backstory bs in backstoriesTranslatedRegular)
             {
-                string currentBackstoryId = null;
-
-                if (migrate)
-                {
-                    newToOldIds.TryGetValue(backstory.Id, out currentBackstoryId);
-                }
-                else
-                {
-                    currentBackstoryId = backstory.Id;
-                }
-
-                if (currentBackstoryId != null && translatedBackstories.TryGetValue(currentBackstoryId, out Backstory translatedBackstory))
-                {
-                    AddBackstoryElementWithHint(outputDoc, GetHint(backstory), XmlHelper.BuildBackstoryElementTranslatedWithEnglishComments(backstory, translatedBackstory));
-                    translatedBackstories.Remove(currentBackstoryId);
-                }
-                else
-                {
-                    AddBackstoryElementWithHint(outputDoc, GetHint(backstory), XmlHelper.BuildBackstoryElementTodoWithEnglishComments(backstory));
-                }
+                Backstory regularBackstory = regularBackstories[bs.Id];
+                AddBackstoryElementWithHint(outputDoc, GetHint(regularBackstory), XmlHelper.BuildBackstoryElementTranslatedWithEnglishComments(regularBackstory, bs));
+                regularBackstories.Remove(bs.Id);
             }
 
-            if (translatedBackstories.Count > 0)
-            {
-                outputDoc.Root.Add(XmlHelper.NewLine);
-                outputDoc.Root.Add(XmlHelper.Tab, new XComment($" Translated but unused "), XmlHelper.NewLine);
+            foreach (Backstory bs in regularBackstories.Values)
+                AddBackstoryElementWithHint(outputDoc, GetHint(bs), XmlHelper.BuildBackstoryElementTodoWithEnglishComments(bs));
 
-                foreach (Backstory translatedBackstory in translatedBackstories.Values)
-                {
-                    AddBackstoryElementWithHint(outputDoc, GetHint(translatedBackstory), XmlHelper.BuildBackstoryElementSimple(translatedBackstory));
-                }
+            foreach (Backstory bs in backstoriesTranslatedSolid)
+            {
+                Backstory solidBackstory = solidBackstories[bs.Id];
+                AddBackstoryElementWithHint(outputDoc, GetHint(solidBackstory), XmlHelper.BuildBackstoryElementTranslatedWithEnglishComments(solidBackstory, bs));
+                solidBackstories.Remove(bs.Id);
             }
+
+            foreach (Backstory bs in solidBackstories.Values)
+                AddBackstoryElementWithHint(outputDoc, GetHint(bs), XmlHelper.BuildBackstoryElementTodoWithEnglishComments(bs));
+
+            outputDoc.Root.Add(XmlHelper.NewLine);
+            outputDoc.Root.Add(XmlHelper.Tab, new XComment($" UNUSED "), XmlHelper.NewLine);
+
+            foreach (Backstory bs in backstoriesTranslatedUnused)
+                AddBackstoryElementWithHint(outputDoc, GetHint(bs), XmlHelper.BuildBackstoryElementSimple(bs));
 
             outputDoc.Root.Add(XmlHelper.NewLine);
             outputDoc.Save(options.OutputBackstories, SaveOptions.None);
         }
 
-        private static void FillBackstoryMigrationMap(HashSet<Backstory> prevBackstories, IEnumerable<Backstory> backstories, Dictionary<string, string> newToOldIds)
+        private static void FillBackstoryMigrationMap(HashSet<Backstory> prevBackstories, IEnumerable<Backstory> backstories, Dictionary<string, string> oldToNewIds)
         {
             int count = backstories.Count();
             int i = 0;
@@ -117,7 +141,7 @@ namespace Elevator.Subtranslator.BackstoryUpdater
                 Backstory bestMatchPrevBackstory = FindBestMatch(prevBackstories, backstory);
                 if (bestMatchPrevBackstory != null)
                 {
-                    newToOldIds[backstory.Id] = bestMatchPrevBackstory.Id;
+                    oldToNewIds[bestMatchPrevBackstory.Id] = backstory.Id;
                     prevBackstories.Remove(bestMatchPrevBackstory);
                 }
             }
