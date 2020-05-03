@@ -15,6 +15,7 @@ namespace Elevator.Subtranslator.BackstoryUpdater
         public string TitleShortFemale;
         public string Description;
         public BackstorySlot Slot;
+        public string Category;
 
         public static string GetIdentifier(Backstory backstory)
         {
@@ -25,6 +26,11 @@ namespace Elevator.Subtranslator.BackstoryUpdater
             string s = backstory.Title.Replace('-', ' ');
             s = VerseGenTextMock.CapitalizedNoSpaces(s);
             return VerseGenTextMock.RemoveNonAlphanumeric(s) + num;
+        }
+
+        public static bool IsSolid(Backstory backstory)
+        {
+            return !string.IsNullOrEmpty(backstory.FirstName);
         }
     }
 }

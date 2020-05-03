@@ -1,8 +1,5 @@
 ﻿using Elevator.Subtranslator.Common;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Xml.Linq;
 using System.Xml.Schema;
 
@@ -13,47 +10,6 @@ namespace Elevator.Subtranslator.BackstoryUpdater
         public static readonly XText NewLine = new XText(Environment.NewLine);
         public static readonly XText Tab = new XText("\t");
         public static readonly XText Tab2 = new XText("\t\t");
-
-        public static IEnumerable<CategorizedBackstories> GetAllResourceBackstories(string resourcesDirectory)
-        {
-            XmlSchemaSet backstoriesSchemaSet = new XmlSchemaSet();
-            backstoriesSchemaSet.Add(XmlSchema.Read(new StringReader(Properties.Resources.BackstoriesSchema), ValidateSchema));
-
-            XmlSchemaSet playerCreatedBiosSchemaSet = new XmlSchemaSet();
-            playerCreatedBiosSchemaSet.Add(XmlSchema.Read(new StringReader(Properties.Resources.PlayerCreatedBiosSchema), ValidateSchema));
-
-            foreach (string resourceFileName in Directory.EnumerateFiles(resourcesDirectory, "*.xml", SearchOption.TopDirectoryOnly))
-            {
-                XDocument doc = XDocument.Load(resourceFileName, LoadOptions.None);
-                if (IsValid(doc, backstoriesSchemaSet))
-                {
-                    string category = Path.GetFileNameWithoutExtension(resourceFileName);
-                    yield return new CategorizedBackstories(category, doc.Root.Elements().Select(ReadBackstoryElementResource));
-                }
-            }
-
-            foreach (string resourceFileName in Directory.EnumerateFiles(resourcesDirectory, "*.xml", SearchOption.TopDirectoryOnly))
-            {
-                string fileName = Path.GetFileName(resourceFileName);
-
-                XDocument doc = XDocument.Load(resourceFileName, LoadOptions.None);
-                if (IsValid(doc, playerCreatedBiosSchemaSet))
-                {
-                    string category = Path.GetFileNameWithoutExtension(resourceFileName);
-                    List<Backstory> solidBackstories = new List<Backstory>();
-
-                    foreach (XElement pawnBioElement in doc.Root.Elements())
-                    {
-                        if (TryReadPawnBioBackstories(pawnBioElement, out Backstory childBackstory, out Backstory adultBackstory))
-                        {
-                            solidBackstories.Add(childBackstory);
-                            solidBackstories.Add(adultBackstory);
-                        }
-                    }
-                    yield return new CategorizedBackstories(category, solidBackstories);
-                }
-            }
-        }
 
         public static bool IsValid(XDocument doc, XmlSchemaSet schemaSet)
         {
@@ -106,9 +62,7 @@ namespace Elevator.Subtranslator.BackstoryUpdater
 
             //Like in RimWorld.Backstory.PostLoad
             backstory.Description = backstory.Description.TrimEnd();
-            backstory.Description = backstory.Description.Replace("\\r", "\r");
-            backstory.Description = backstory.Description.Replace("\\n", "\n");
-            backstory.Description = backstory.Description.Replace("\r", "");
+            backstory.Description = backstory.Description.Replace("\\r", "\r").Replace("\\n", "\n").Replace("\r", "");
 
             backstory.Id = Backstory.GetIdentifier(backstory);
 
@@ -152,7 +106,7 @@ namespace Elevator.Subtranslator.BackstoryUpdater
 
         public static XElement BuildBackstoryElementTranslatedWithEnglishComments(Backstory originalBackstory, Backstory translatedBackstory)
         {
-            XElement backstoryElement = new XElement(translatedBackstory.Id);
+            XElement backstoryElement = new XElement(originalBackstory.Id);
 
             backstoryElement.Add(NewLine);
 
@@ -192,21 +146,25 @@ namespace Elevator.Subtranslator.BackstoryUpdater
             backstoryElement.Add(NewLine);
 
             backstoryElement.Add(Tab2, new XComment($" EN: {originalBackstory.Title} "), NewLine);
-            backstoryElement.Add(Tab2, new XElement("title", "TODO"), NewLine);
+            backstoryElement.Add(Tab2, new XElement("title", originalBackstory.Title), NewLine);
 
             if (!string.IsNullOrEmpty(originalBackstory.TitleFemale))
+            {
                 backstoryElement.Add(Tab2, new XComment($" EN: {originalBackstory.TitleFemale} "), NewLine);
-            backstoryElement.Add(Tab2, new XElement("titleFemale", "TODO"), NewLine);
+                backstoryElement.Add(Tab2, new XElement("titleFemale", originalBackstory.TitleFemale), NewLine);
+            }
 
             backstoryElement.Add(Tab2, new XComment($" EN: {originalBackstory.TitleShort} "), NewLine);
-            backstoryElement.Add(Tab2, new XElement("titleShort", "TODO"), NewLine);
+            backstoryElement.Add(Tab2, new XElement("titleShort", originalBackstory.TitleShort), NewLine);
 
             if (!string.IsNullOrEmpty(originalBackstory.TitleFemale))
+            {
                 backstoryElement.Add(Tab2, new XComment($" EN: {originalBackstory.TitleShortFemale} "), NewLine);
-            backstoryElement.Add(Tab2, new XElement("titleShortFemale", "TODO"), NewLine);
+                backstoryElement.Add(Tab2, new XElement("titleShortFemale", originalBackstory.TitleShortFemale), NewLine);
+            }
 
             backstoryElement.Add(Tab2, new XComment($" EN: {originalBackstory.Description} "), NewLine);
-            backstoryElement.Add(Tab2, new XElement("desc", "TODO"), NewLine);
+            backstoryElement.Add(Tab2, new XElement("desc", originalBackstory.Description), NewLine);
             backstoryElement.Add(Tab);
 
             return backstoryElement;
@@ -219,11 +177,6 @@ namespace Elevator.Subtranslator.BackstoryUpdater
                 return BackstorySlot.Unknown;
 
             return (BackstorySlot)Enum.Parse(typeof(BackstorySlot), slotElem.Value, true);
-        }
-
-        private static void ValidateSchema(object sender, ValidationEventArgs e)
-        {
-            throw new XmlSchemaValidationException(e.Message, e.Exception, e.Exception.LineNumber, e.Exception.LinePosition);
         }
     }
 }
