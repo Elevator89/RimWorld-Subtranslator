@@ -60,13 +60,11 @@ namespace Elevator.Subtranslator.BackstoryUpdater
                 Slot = ParseSlot(storyElem)
             };
 
-            //Like in RimWorld.Backstory.PostLoad
-            backstory.Description = backstory.Description.TrimEnd();
-            backstory.Description = backstory.Description.Replace("\\r", "\r").Replace("\\n", "\n").Replace("\r", "");
-
             backstory.Id = Backstory.GetIdentifier(backstory);
 
-            backstory.Description = backstory.Description.FixNewLines().Trim();
+            // We don't want to spoil sensitive hash function, but want to make line endings consistent
+            backstory.Description = backstory.Description.Replace("\r", "").Replace("\n", "\\n");
+
             return backstory;
         }
 
@@ -79,7 +77,7 @@ namespace Elevator.Subtranslator.BackstoryUpdater
                 TitleFemale = storyElem.Element("titleFemale", true)?.Value,
                 TitleShort = storyElem.Element("titleShort", true).Value,
                 TitleShortFemale = storyElem.Element("titleShortFemale", true)?.Value,
-                Description = storyElem.Element("desc", true).Value.FixNewLines().Trim(),
+                Description = storyElem.Element("desc", true).Value.Replace("\r", "").Replace("\n", "\\n").Trim(),
                 Slot = BackstorySlot.Unknown
             };
         }

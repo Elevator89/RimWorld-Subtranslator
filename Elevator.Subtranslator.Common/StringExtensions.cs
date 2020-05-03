@@ -24,9 +24,14 @@ namespace Elevator.Subtranslator.Common
             return new string(chars);
         }
 
-        public static string FixNewLines(this string input)
+        public static string UnescapeNewLines(this string input)
         {
             return input.Replace("\\n", Environment.NewLine).Replace(Environment.NewLine, "\n").Replace("\n", Environment.NewLine);
+        }
+
+        public static string EscapeNewLines(this string input)
+        {
+            return input.Replace(Environment.NewLine, "\\n");
         }
 
         public static int IndexOfAny(this string str, params string[] anyOf)

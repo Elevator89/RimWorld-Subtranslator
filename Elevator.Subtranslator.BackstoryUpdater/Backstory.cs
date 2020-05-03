@@ -22,7 +22,10 @@ namespace Elevator.Subtranslator.BackstoryUpdater
             if (!string.IsNullOrEmpty(backstory.Id))
                 return backstory.Id;
 
-            int num = Math.Abs(VerseGenTextMock.StableStringHash(backstory.Description) % 100);
+            //Like in RimWorld.Backstory.PostLoad. Sensitive!
+            string descriptionForHash = backstory.Description.TrimEnd().Replace("\\r", "").Replace("\\n", "\n");
+
+            int num = Math.Abs(VerseGenTextMock.StableStringHash(descriptionForHash) % 100);
             string s = backstory.Title.Replace('-', ' ');
             s = VerseGenTextMock.CapitalizedNoSpaces(s);
             return VerseGenTextMock.RemoveNonAlphanumeric(s) + num;
