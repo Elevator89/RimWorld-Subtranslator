@@ -157,7 +157,7 @@ namespace Elevator.Subtranslator.BackstoryUpdater
             backstoryElement.Add(Tab2, new XComment($" EN: {originalBackstory.TitleShort} "), NewLine);
             backstoryElement.Add(Tab2, new XElement("titleShort", originalBackstory.TitleShort), NewLine);
 
-            if (!string.IsNullOrEmpty(originalBackstory.TitleFemale))
+            if (!string.IsNullOrEmpty(originalBackstory.TitleShortFemale))
             {
                 backstoryElement.Add(Tab2, new XComment($" EN: {originalBackstory.TitleShortFemale} "), NewLine);
                 backstoryElement.Add(Tab2, new XElement("titleShortFemale", originalBackstory.TitleShortFemale), NewLine);
