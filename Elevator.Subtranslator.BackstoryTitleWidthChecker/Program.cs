@@ -28,7 +28,7 @@ namespace Elevator.Subtranslator.BackstoryTitleWidthChecker
 		}
 
         /// <summary>
-        /// Very useful utility to check if width of backstory titles in pixels. Check Verse.Text class for more correct work
+        /// Very useful utility to check if width of backstory titles in pixels. Check Verse.Text class for more correct work. Width of field is 160px
         /// </summary>
         /// <param name="args"></param>
 		static void Main(string[] args)
