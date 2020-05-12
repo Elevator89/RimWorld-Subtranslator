@@ -13,10 +13,10 @@ namespace Elevator.Subtranslator.BackstoryUpdater
 {
     class Options
     {
-        [Option('p', "resourcesPrev", Required = false, DefaultValue = "", HelpText = "Path to unpacked Unity_Assets_Files\\resources directory for the previous version")]
+        [Option('p', "resourcesPrev", Required = false, DefaultValue = "", HelpText = "Path to Unity_Assets_Files\\resources directory unpacked with UnityEX for the version of the game, for which backstories are currently translated")]
         public string ResourcesDirectoryPrev { get; set; }
 
-        [Option('r', "resources", Required = true, HelpText = "Path to unpacked Unity_Assets_Files\\resources directory")]
+        [Option('r', "resources", Required = true, HelpText = "Path to Unity_Assets_Files\\resources directory unpacked with UnityEX")]
         public string ResourcesDirectory { get; set; }
 
         [Option('t', "translatedBackstories", Required = true, HelpText = "Path to translated backsories file")]
