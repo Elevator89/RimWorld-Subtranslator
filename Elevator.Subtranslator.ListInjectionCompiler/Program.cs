@@ -14,15 +14,16 @@ namespace Elevator.Subtranslator.ListInjectionCompiler
 		public string XmlFile { get; set; }
 	}
 
-    /// <summary>
-    /// Formats list of lines to XML-structured list
-    /// </summary>
+	/// <summary>
+	/// Formats list of lines to XML-structured list
+	/// </summary>
 	class Program
 	{
 		static void Main(string[] args)
 		{
 			ParserResult<Options> parseResult = Parser.Default.ParseArguments<Options>(args);
-			if (parseResult.Errors.Any()) return;
+			if (parseResult.Errors.Any())
+				return;
 
 			Options options = parseResult.Value;
 
@@ -75,7 +76,8 @@ namespace Elevator.Subtranslator.ListInjectionCompiler
 		{
 			for (int i = 0; i < line.Length; ++i)
 			{
-				if (line[i] != 9) return i;
+				if (line[i] != 9)
+					return i;
 			}
 			return -1;
 		}

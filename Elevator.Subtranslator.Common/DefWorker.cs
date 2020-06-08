@@ -42,7 +42,8 @@ namespace Elevator.Subtranslator.Common
 					return true;
 
 				XAttribute parentNameAttrib = def.Attribute("ParentName");
-				if (parentNameAttrib == null) return false;
+				if (parentNameAttrib == null)
+					return false;
 
 				defName = parentNameAttrib.Value;
 				def = GetDef(allDefs, defType, defName);
@@ -64,7 +65,8 @@ namespace Elevator.Subtranslator.Common
 					return true;
 
 				XAttribute parentNameAttrib = def.Attribute("ParentName");
-				if (parentNameAttrib == null) return false;
+				if (parentNameAttrib == null)
+					return false;
 
 				string parentDefName = parentNameAttrib.Value;
 				def = GetDef(allDefs, def.Name.LocalName, parentDefName);
@@ -86,7 +88,8 @@ namespace Elevator.Subtranslator.Common
 					return true;
 
 				XAttribute parentNameAttrib = def.Attribute("ParentName");
-				if (parentNameAttrib == null) return false;
+				if (parentNameAttrib == null)
+					return false;
 
 				string parentDefName = parentNameAttrib.Value;
 				def = GetDef(allDefs, def.Name.LocalName, parentDefName);
@@ -113,12 +116,14 @@ namespace Elevator.Subtranslator.Common
 			{
 				XAttribute parentNameAttrib = def.Attribute("ParentName");
 
-				if (parentNameAttrib == null) return null;
+				if (parentNameAttrib == null)
+					return null;
 
 				defName = parentNameAttrib.Value;
 				def = GetDef(allDefs, defType, defName);
 
-				if (def == null) return null;
+				if (def == null)
+					return null;
 
 				defFieldValue = GetFieldValue(def, tail);
 			}

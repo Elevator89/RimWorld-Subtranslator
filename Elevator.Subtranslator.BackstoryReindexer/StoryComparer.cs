@@ -2,8 +2,8 @@
 
 namespace Elevator.Subtranslator.BackstoryReindexer
 {
-    public class StoryComparer : IEqualityComparer<Story>
-    {
+	public class StoryComparer : IEqualityComparer<Story>
+	{
 		public bool Equals(Story x, Story y)
 		{
 			return
@@ -41,9 +41,9 @@ namespace Elevator.Subtranslator.BackstoryReindexer
 				.Replace("HIM", "{PAWN_objective}");
 		}
 
-        public int GetHashCode(Story obj)
-        {
-            return (obj.Title.ToLower() + obj.TitleShort.ToLower() + ReplaceVars(obj.Description.ToUpper())).GetHashCode();
-        }
-    }
+		public int GetHashCode(Story obj)
+		{
+			return (obj.Title.ToLower() + obj.TitleShort.ToLower() + ReplaceVars(obj.Description.ToUpper())).GetHashCode();
+		}
+	}
 }

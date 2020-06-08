@@ -33,9 +33,9 @@ namespace Elevator.Subtranslator.LabelGenderer
 		public string IgnoreFile { get; set; }
 	}
 
-    /// <summary>
-    /// Reads def injections' labels and allows user to specify which gender each of them is
-    /// </summary>
+	/// <summary>
+	/// Reads def injections' labels and allows user to specify which gender each of them is
+	/// </summary>
 	class Program
 	{
 		static void Main(string[] args)

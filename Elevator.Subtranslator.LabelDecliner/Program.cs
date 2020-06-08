@@ -26,9 +26,9 @@ namespace Elevator.Subtranslator.LabelDecliner
 		public string IgnoreFile { get; set; }
 	}
 
-    /// <summary>
-    /// Reads def injections' labels and allows user to specify all cases for each label, then outputs them to a specified file
-    /// </summary>
+	/// <summary>
+	/// Reads def injections' labels and allows user to specify all cases for each label, then outputs them to a specified file
+	/// </summary>
 	class Program
 	{
 		static void Main(string[] args)
@@ -87,7 +87,7 @@ namespace Elevator.Subtranslator.LabelDecliner
 
 				if (currentDeclination == null)
 				{
-					Console.WriteLine($"    Failed to decline");
+					Console.WriteLine($"	Failed to decline");
 				}
 				else
 				{

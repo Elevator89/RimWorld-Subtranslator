@@ -34,9 +34,9 @@ namespace Elevator.Subtranslator.LabelRearranger
 		public string OutputFile { get; set; }
 	}
 
-    /// <summary>
-    /// Reads files categorized by gender, analyzes which Def category they belong, and writes them back
-    /// </summary>
+	/// <summary>
+	/// Reads files categorized by gender, analyzes which Def category they belong, and writes them back
+	/// </summary>
 	class Program
 	{
 		static void Main(string[] args)

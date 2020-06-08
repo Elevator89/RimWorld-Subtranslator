@@ -2,55 +2,55 @@
 
 namespace Elevator.Subtranslator.Common
 {
-    public static class StringExtensions
-    {
-        public static string DecapitalizeFirst(this string input)
-        {
-            if (input.Length == 0)
-                return input;
+	public static class StringExtensions
+	{
+		public static string DecapitalizeFirst(this string input)
+		{
+			if (input.Length == 0)
+				return input;
 
-            char[] chars = input.ToCharArray();
-            chars[0] = char.ToLower(chars[0]);
-            return new string(chars);
-        }
+			char[] chars = input.ToCharArray();
+			chars[0] = char.ToLower(chars[0]);
+			return new string(chars);
+		}
 
-        public static string CapitalizeFirst(this string input)
-        {
-            if (input.Length == 0)
-                return input;
+		public static string CapitalizeFirst(this string input)
+		{
+			if (input.Length == 0)
+				return input;
 
-            char[] chars = input.ToCharArray();
-            chars[0] = char.ToUpper(chars[0]);
-            return new string(chars);
-        }
+			char[] chars = input.ToCharArray();
+			chars[0] = char.ToUpper(chars[0]);
+			return new string(chars);
+		}
 
-        public static string UnescapeNewLines(this string input)
-        {
-            return input.Replace("\\n", Environment.NewLine).Replace(Environment.NewLine, "\n").Replace("\n", Environment.NewLine);
-        }
+		public static string UnescapeNewLines(this string input)
+		{
+			return input.Replace("\\n", Environment.NewLine).Replace(Environment.NewLine, "\n").Replace("\n", Environment.NewLine);
+		}
 
-        public static string EscapeNewLines(this string input)
-        {
-            return input.Replace(Environment.NewLine, "\\n");
-        }
+		public static string EscapeNewLines(this string input)
+		{
+			return input.Replace(Environment.NewLine, "\\n");
+		}
 
-        public static int IndexOfAny(this string str, params string[] anyOf)
-        {
-            int minIndex = int.MaxValue;
+		public static int IndexOfAny(this string str, params string[] anyOf)
+		{
+			int minIndex = int.MaxValue;
 
-            foreach (string value in anyOf)
-            {
-                int index = str.IndexOf(value);
-                if (index == -1)
-                    continue;
+			foreach (string value in anyOf)
+			{
+				int index = str.IndexOf(value);
+				if (index == -1)
+					continue;
 
-                if (index < minIndex)
-                {
-                    minIndex = index;
-                }
-            }
+				if (index < minIndex)
+				{
+					minIndex = index;
+				}
+			}
 
-            return minIndex == int.MaxValue ? -1 : minIndex;
-        }
-    }
+			return minIndex == int.MaxValue ? -1 : minIndex;
+		}
+	}
 }

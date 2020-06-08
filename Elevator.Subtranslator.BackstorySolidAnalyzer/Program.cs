@@ -26,7 +26,7 @@ namespace Elevator.Subtranslator.BackstorySolidAnalyzer
 			p.Setup(arg => arg.CreationsFileName)
 			 .As('c', "creations") // define the short and long option name
 			 .Required() // using the standard fluent Api to declare this Option as required.
-			 .WithDescription("Rimworld creations file path");           // specify which property the value will be assigned too.
+			 .WithDescription("Rimworld creations file path");		   // specify which property the value will be assigned too.
 
 			p.Setup(arg => arg.BackstoriesInputFileName)
 			 .As('b', "backstories") // define the short and long option name

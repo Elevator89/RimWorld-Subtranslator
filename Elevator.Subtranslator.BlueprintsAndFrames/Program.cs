@@ -20,15 +20,16 @@ namespace Elevator.Subtranslator.BlueprintsAndFrames
 		public string ReportPath { get; set; }
 	}
 
-    /// <summary>
-    /// Outputs Implied def injections for blueprints and frames. Probably useless
-    /// </summary>
+	/// <summary>
+	/// Outputs Implied def injections for blueprints and frames. Probably useless
+	/// </summary>
 	class Program
 	{
 		static void Main(string[] args)
 		{
 			ParserResult<Options> parseResult = Parser.Default.ParseArguments<Options>(args);
-			if (parseResult.Errors.Any()) return;
+			if (parseResult.Errors.Any())
+				return;
 
 			Options options = parseResult.Value;
 
@@ -50,17 +51,23 @@ namespace Elevator.Subtranslator.BlueprintsAndFrames
 					string defname = DefWorker.GetDefName(def);
 					string defType = def.Name.LocalName;
 
-					if (DefWorker.IsDefAbstract(def)) continue;
-					if (!DefWorker.DefHasParent(mergedDefs, def, "BuildingBase")) continue;
-					if (!DefWorker.DefHasElement(mergedDefs, def, "designationCategory")) continue;
+					if (DefWorker.IsDefAbstract(def))
+						continue;
+					if (!DefWorker.DefHasParent(mergedDefs, def, "BuildingBase"))
+						continue;
+					if (!DefWorker.DefHasElement(mergedDefs, def, "designationCategory"))
+						continue;
 
 					XElement defLabelElement = def.Element("label");
-					if (defLabelElement == null) continue;
+					if (defLabelElement == null)
+						continue;
 
 					string defLabel = defLabelElement.Value;
-					if (string.IsNullOrEmpty(defLabel)) continue;
+					if (string.IsNullOrEmpty(defLabel))
+						continue;
 
-					string defLabelLocalized = injections.FirstOrDefault(inj => inj.DefType == defType && inj.DefPath == defname + ".label").Translation; ;
+					string defLabelLocalized = injections.FirstOrDefault(inj => inj.DefType == defType && inj.DefPath == defname + ".label").Translation;
+					;
 
 
 					Injection blueprintLabel = injections.FirstOrDefault(inj => inj.DefType == defType && inj.DefPath == defname + "_Blueprint.label");
@@ -96,7 +103,8 @@ namespace Elevator.Subtranslator.BlueprintsAndFrames
 					if (frameDescription == null)
 					{
 						sw.WriteLine("\t<{0}>{1}</{0}>", descriptionTag, defDescriptionLocalized);
-					}else if(frameDescription.Translation != defDescriptionLocalized)
+					}
+					else if (frameDescription.Translation != defDescriptionLocalized)
 					{
 						sw.WriteLine("Replace: <{0}>", descriptionTag);
 						sw.WriteLine("\t\t{0}", frameDescription.Translation);

@@ -25,7 +25,7 @@ namespace Elevator.Subtranslator.BackstoryReindexer
 			p.Setup(arg => arg.OldOrigBackstoriesFileName)
 			 .As('l', "old") // define the short and long option name
 			 .Required() // using the standard fluent Api to declare this Option as required.
-			 .WithDescription("Old backstories original file path");           // specify which property the value will be assigned too.
+			 .WithDescription("Old backstories original file path");		   // specify which property the value will be assigned too.
 
 			p.Setup(arg => arg.NewOrigBackstoriesFileName)
 			 .As('n', "new")
@@ -142,8 +142,8 @@ namespace Elevator.Subtranslator.BackstoryReindexer
 				XElement titleShortFemale = new XElement("titleShortFemale", story.TitleShort);
 				XElement desc = new XElement("desc", story.Description);
 
-                newElement.Add(newLine);
-                newElement.Add(tab2, title, newLine);
+				newElement.Add(newLine);
+				newElement.Add(tab2, title, newLine);
 				newElement.Add(tab2, titleFemale, newLine);
 				newElement.Add(tab2, titleShort, newLine);
 				newElement.Add(tab2, titleShortFemale, newLine);

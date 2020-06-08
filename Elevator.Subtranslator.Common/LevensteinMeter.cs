@@ -83,7 +83,7 @@ namespace Elevator.Subtranslator.Common
 			int maxDistN = (int)(maxDist * length);
 			int distN = GetDistanceQ(a, b, maxDistN);
 			return (float)distN / length;
-        }
+		}
 
 		public int GetDistanceQ(string a, string b, int maxDist)
 		{

@@ -121,7 +121,8 @@ namespace Elevator.Subtranslator.Common
 
 		private static string GetLeafPart(string[] parts)
 		{
-			if (parts.Length == 0) return null;
+			if (parts.Length == 0)
+				return null;
 
 			for (int i = parts.Length - 1; i >= 0; --i)
 			{
