@@ -5,8 +5,8 @@ using System.IO;
 using System.Linq;
 using System.Xml.Linq;
 using Elevator.Subtranslator.Common;
-using Elevator.Subtranslator.Common.JoinExtensions;
 using System.Xml;
+using System.Text.RegularExpressions;
 
 namespace Elevator.Subtranslator.Reporter
 {
@@ -23,16 +23,16 @@ namespace Elevator.Subtranslator.Reporter
 		public string ReportPath { get; set; }
 	}
 
-	class GroupedResult
+	class Entry
 	{
-		public string GroupName { get; private set; }
+		public string Category { get; private set; }
 		public string Key { get; private set; }
 		public string EtalonValue { get; private set; }
 		public string TargetValue { get; private set; }
 
-		public GroupedResult(string groupName, string key, string etalon, string target)
+		public Entry(string category, string key, string etalon, string target)
 		{
-			GroupName = groupName;
+			Category = category;
 			Key = key;
 			EtalonValue = etalon;
 			TargetValue = target;
@@ -59,43 +59,41 @@ namespace Elevator.Subtranslator.Reporter
 			InjectionPathComparer injComparer = new InjectionPathComparer();
 			DefTypeComparer defTypeComparer = new DefTypeComparer();
 
-			List<GroupedResult> keyedEntries = ReadCommentedKeyedValues(Path.Combine(options.TargetPath, "Keyed")).ToList();
-			List<GroupedResult> injectedEntries = ReadCommentedInjections(Path.Combine(options.TargetPath, "DefInjected")).Where(inj => !exceptions.Contains(inj.GroupName, defTypeComparer)).ToList();
-
-			List<IGrouping<string, GroupedResult>> keyedGroupedResult = keyedEntries.GroupBy(inj => inj.GroupName).ToList();
-			List<IGrouping<string, GroupedResult>> injectedGroupedResult = injectedEntries.GroupBy(inj => inj.GroupName).ToList();
+			List<Entry> keyedEntries = ReadCommentedKeyedValues(Path.Combine(options.TargetPath, "Keyed")).ToList();
+			List<Entry> injectedEntries = ReadCommentedInjections(Path.Combine(options.TargetPath, "DefInjected")).Where(inj => !exceptions.Contains(inj.Category, defTypeComparer)).ToList();
 
 			using (StreamWriter sw = File.CreateText(options.ReportPath))
 			{
-				sw.WriteLine();
-				sw.WriteLine("Injected items:");
-
-				foreach (IGrouping<string, GroupedResult> group in injectedGroupedResult)
-				{
-					sw.WriteLine();
-					sw.WriteLine(group.Key);
-					foreach (GroupedResult result in group)
-					{
-						sw.WriteLine("{0}\t{1}\t{2}", result.Key, result.EtalonValue, result.TargetValue);
-					}
-				}
-				sw.WriteLine();
-				sw.WriteLine("Keyed items:");
-
-				foreach (IGrouping<string, GroupedResult> group in keyedGroupedResult)
-				{
-					sw.WriteLine();
-					sw.WriteLine(group.Key);
-					foreach (GroupedResult result in group)
-					{
-						sw.WriteLine("{0}\t{1}\t{2}", result.Key, result.EtalonValue, result.TargetValue);
-					}
-				}
+				WriteEntriesGrouped(injectedEntries.Concat(keyedEntries), sw);
 				sw.Close();
 			}
 		}
 
-		static IEnumerable<GroupedResult> ReadCommentedKeyedValues(string path)
+		static void WriteEntriesGrouped(IEnumerable<Entry> entries, StreamWriter sw)
+		{
+			List<IGrouping<string, Entry>> groupedEntries = entries.GroupBy(inj => inj.Category).ToList();
+
+			foreach (IGrouping<string, Entry> group in groupedEntries)
+			{
+				sw.WriteLine(group.Key);
+				foreach (Entry entry in group)
+				{
+					sw.WriteLine($"{entry.Key}\t{entry.EtalonValue}\t{entry.TargetValue}");
+				}
+			}
+		}
+
+		static void WriteEntriesDirect(IEnumerable<Entry> entries, StreamWriter sw)
+		{
+			foreach (Entry entry in entries)
+			{
+				sw.WriteLine($"{entry.Category}\t{entry.Key}\t{entry.EtalonValue}\t{entry.TargetValue}");
+			}
+		}
+
+		private static readonly Regex _englishComment = new Regex(@"^ EN: (.*?) $", RegexOptions.Compiled);
+
+		static IEnumerable<Entry> ReadCommentedKeyedValues(string path)
 		{
 			DirectoryInfo keyedDir = new DirectoryInfo(path);
 			foreach (FileInfo file in keyedDir.EnumerateFiles("*.xml", SearchOption.TopDirectoryOnly))
@@ -119,16 +117,16 @@ namespace Elevator.Subtranslator.Reporter
 				foreach (XElement keyedElement in languageData.Elements())
 				{
 					XComment comment = keyedElement.PreviousNode as XComment;
-					string etalon = comment == null ? string.Empty : comment.Value.Replace(" EN: ", string.Empty);
 
-					yield return new GroupedResult(file.Name, keyedElement.Name.LocalName, etalon, keyedElement.Value);
+					string etalon = comment == null ? string.Empty : _englishComment.Match(comment.Value).Groups[1].Value;
+					yield return new Entry(file.Name, keyedElement.Name.LocalName, etalon, keyedElement.Value);
 				}
 			}
 		}
 
-		static IEnumerable<GroupedResult> ReadCommentedInjections(string injectionsDirPath)
+		static IEnumerable<Entry> ReadCommentedInjections(string injectionsDirPath)
 		{
-			List<GroupedResult> results = new List<GroupedResult>();
+			List<Entry> results = new List<Entry>();
 
 			DirectoryInfo injectionsDir = new DirectoryInfo(injectionsDirPath);
 			foreach (DirectoryInfo injectionTypeDir in injectionsDir.EnumerateDirectories())
@@ -144,8 +142,9 @@ namespace Elevator.Subtranslator.Reporter
 						foreach (XElement injection in languageData.Elements())
 						{
 							XComment comment = injection.PreviousNode as XComment;
-							string etalon = comment == null ? string.Empty : comment.Value.Replace(" EN: ", string.Empty);
-							results.Add(new GroupedResult(defType, injection.Name.LocalName, etalon, injection.Value));
+
+							string etalon = comment == null ? string.Empty : _englishComment.Match(comment.Value).Groups[1].Value;
+							results.Add(new Entry(defType, injection.Name.LocalName, etalon, injection.Value));
 						}
 					}
 					catch (Exception ex)
@@ -159,7 +158,5 @@ namespace Elevator.Subtranslator.Reporter
 			}
 			return results;
 		}
-
-
 	}
 }
