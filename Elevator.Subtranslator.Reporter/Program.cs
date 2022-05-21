@@ -78,7 +78,7 @@ namespace Elevator.Subtranslator.Reporter
 				sw.WriteLine(group.Key);
 				foreach (Entry entry in group)
 				{
-					sw.WriteLine($"{entry.Key}\t{entry.EtalonValue}\t{entry.TargetValue}");
+					sw.WriteLine($"{entry.TargetValue}");
 				}
 			}
 		}
