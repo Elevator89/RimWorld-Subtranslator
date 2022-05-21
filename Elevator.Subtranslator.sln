@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.168
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.32106.194
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elevator.Subtranslator.BlueprintsAndFrames", "Elevator.Subtranslator.BlueprintsAndFrames\Elevator.Subtranslator.BlueprintsAndFrames.csproj", "{3361A470-FEA4-4B2D-98CD-53D86C7FB3E5}"
 EndProject
@@ -12,10 +12,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elevator.Subtranslator.Reporter", "Elevator.Subtranslator.Reporter\Elevator.Subtranslator.Reporter.csproj", "{4C46B3E4-F7FC-4383-9F52-C5AA0B589BD8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elevator.Subtranslator.BackstoryIssueGenerator", "Elevator.Subtranslator.BackstoryIssueGenerator\Elevator.Subtranslator.BackstoryIssueGenerator.csproj", "{B153E2F1-5109-4E60-AF40-9BF40904992F}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elevator.Subtranslator.BackstoryReindexer", "Elevator.Subtranslator.BackstoryReindexer\Elevator.Subtranslator.BackstoryReindexer.csproj", "{83C24E94-4D23-4FC8-9AEB-7B21BB8A5B15}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elevator.Subtranslator.BackstorySolidAnalyzer", "Elevator.Subtranslator.BackstorySolidAnalyzer\Elevator.Subtranslator.BackstorySolidAnalyzer.csproj", "{D4DDFBB8-7F47-408B-87DB-F1018CB2BE8D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elevator.Subtranslator.BackstoryTitleWidthChecker", "Elevator.Subtranslator.BackstoryTitleWidthChecker\Elevator.Subtranslator.BackstoryTitleWidthChecker.csproj", "{EC9F27A4-3008-41F4-A4E9-86B4C2E6E26D}"
 EndProject
@@ -53,14 +49,6 @@ Global
 		{B153E2F1-5109-4E60-AF40-9BF40904992F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B153E2F1-5109-4E60-AF40-9BF40904992F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B153E2F1-5109-4E60-AF40-9BF40904992F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{83C24E94-4D23-4FC8-9AEB-7B21BB8A5B15}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{83C24E94-4D23-4FC8-9AEB-7B21BB8A5B15}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{83C24E94-4D23-4FC8-9AEB-7B21BB8A5B15}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{83C24E94-4D23-4FC8-9AEB-7B21BB8A5B15}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D4DDFBB8-7F47-408B-87DB-F1018CB2BE8D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D4DDFBB8-7F47-408B-87DB-F1018CB2BE8D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D4DDFBB8-7F47-408B-87DB-F1018CB2BE8D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D4DDFBB8-7F47-408B-87DB-F1018CB2BE8D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{EC9F27A4-3008-41F4-A4E9-86B4C2E6E26D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{EC9F27A4-3008-41F4-A4E9-86B4C2E6E26D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EC9F27A4-3008-41F4-A4E9-86B4C2E6E26D}.Release|Any CPU.ActiveCfg = Release|Any CPU
