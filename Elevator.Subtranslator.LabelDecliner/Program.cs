@@ -13,16 +13,16 @@ namespace Elevator.Subtranslator.LabelDecliner
 
 	class Arguments
 	{
-		[Option('d', "defs", Required = true, HelpText = "Path to translation DefInjected folder.")]
+		[Option('d', "defsPath", Required = true, HelpText = "Path to translation DefInjected folder.")]
 		public string DefsPath { get; set; }
 
-		[Option('t', "def types", DefaultValue = "", Required = false, HelpText = "Use only these def types.")]
+		[Option('t', "defTypes", DefaultValue = "", Required = false, HelpText = "Use only these def types.")]
 		public string DefsTypes { get; set; }
 
-		[Option('o', "output", Required = true, HelpText = "Path to the cased nouns table file.")]
+		[Option('o', "outputFile", Required = true, HelpText = "Path to the cased nouns table file.")]
 		public string Output { get; set; }
 
-		[Option('i', "ignored", Required = true, HelpText = "Path to the file with nouns, for which case is ignored.")]
+		[Option('i', "ignoreFile", Required = true, HelpText = "Path to the file with nouns, for which case is ignored.")]
 		public string IgnoreFile { get; set; }
 	}
 
