@@ -7,11 +7,11 @@ namespace Elevator.Subtranslator.LabelDecliner
 	{
 		private static readonly Regex _wordStartRegex = new Regex(@"\s\w", RegexOptions.Compiled);
 
-		public static string ReadLine(string defaultValue)
+		public static string ReadLine(string defaultValue, int cursorRelativePosBefore, out int cursorRelativePosAfter)
 		{
 			int cursorBase = Console.CursorLeft;
 			string value = defaultValue;
-			int cursorRelative = value.Length;
+			int cursorRelative = cursorRelativePosBefore == -1 ? value.Length : Math.Min(cursorRelativePosBefore, value.Length);
 
 			while (true)
 			{
@@ -23,6 +23,7 @@ namespace Elevator.Subtranslator.LabelDecliner
 				if (info.Key == ConsoleKey.Enter)
 				{
 					Console.Write(Environment.NewLine);
+					cursorRelativePosAfter = cursorRelative;
 					return value;
 				}
 
@@ -44,7 +45,7 @@ namespace Elevator.Subtranslator.LabelDecliner
 						while (value[startIndex] == ' ' && startIndex > 0)
 							startIndex--;
 
-						int prevWordStart = value.LastIndexOf(' ', startIndex);
+						int prevWordStart = value.LastIndexOfAny(new[] { ' ', '-' }, startIndex);
 						cursorRelative = prevWordStart == -1 ? 0 : prevWordStart;
 					}
 					else
@@ -69,17 +70,13 @@ namespace Elevator.Subtranslator.LabelDecliner
 						while (value[startIndex] == ' ' && startIndex > 0)
 							startIndex++;
 
-						int nextWordStart = value.IndexOf(' ', startIndex);
+						int nextWordStart = value.IndexOfAny(new[] { ' ', '-' }, startIndex);
 						cursorRelative = nextWordStart == -1 ? value.Length : nextWordStart;
 					}
 					else
 					{
 						cursorRelative++;
 					}
-
-					//cursorRelative = info.Modifiers == ConsoleModifiers.Control
-					//	? value.IndexOf(' ', cursorRelative)
-					//	: cursorRelative + 1;
 				}
 				else if (char.IsLetterOrDigit(c) || char.IsSeparator(c) || char.IsSymbol(c) || char.IsPunctuation(c))
 				{

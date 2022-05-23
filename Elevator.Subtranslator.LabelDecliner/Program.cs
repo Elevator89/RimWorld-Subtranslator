@@ -190,10 +190,11 @@ namespace Elevator.Subtranslator.LabelDecliner
 
 		private static void ReadDeclination(CyrResult declinationResult)
 		{
+			int cursorPos = -1;
 			foreach (CasesEnum labelCase in Enum.GetValues(typeof(CasesEnum)))
 			{
 				Console.Write($" {labelCase,15}: ");
-				declinationResult.Set(labelCase, ConsoleTools.ReadLine(declinationResult.Get(labelCase)));
+				declinationResult.Set(labelCase, ConsoleTools.ReadLine(declinationResult.Get(labelCase), cursorPos, out cursorPos));
 			}
 		}
 
