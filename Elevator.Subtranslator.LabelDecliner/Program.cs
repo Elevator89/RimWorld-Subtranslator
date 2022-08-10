@@ -2,6 +2,7 @@
 using Cyriller;
 using Cyriller.Model;
 using Elevator.Subtranslator.Common;
+using Elevator.Subtranslator.ConsoleTools;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -194,7 +195,7 @@ namespace Elevator.Subtranslator.LabelDecliner
 			foreach (CasesEnum labelCase in Enum.GetValues(typeof(CasesEnum)))
 			{
 				Console.Write($" {labelCase,15}: ");
-				declinationResult.Set(labelCase, ConsoleTools.ReadLine(declinationResult.Get(labelCase), cursorPos, out cursorPos));
+				declinationResult.Set(labelCase, SmartConsole.ReadLine(declinationResult.Get(labelCase), cursorPos, out cursorPos));
 			}
 		}
 
@@ -203,19 +204,6 @@ namespace Elevator.Subtranslator.LabelDecliner
 			foreach (CasesEnum labelCase in Enum.GetValues(typeof(CasesEnum)))
 			{
 				Console.WriteLine($" {labelCase,15}: {declinationResult.Get(labelCase)}");
-			}
-		}
-
-		private static string GetFileForOption(Arguments arguments, Option option)
-		{
-			switch (option)
-			{
-				case Option.Accept:
-					return arguments.Output;
-				case Option.Ignore:
-					return arguments.IgnoreFile;
-				default:
-					return null;
 			}
 		}
 

@@ -4,17 +4,16 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{F3A79B03-D1A8-4573-8542-B7276D11983C}</ProjectGuid>
-    <OutputType>Exe</OutputType>
-    <RootNamespace>Elevator.Subtranslator.LabelDecliner</RootNamespace>
-    <AssemblyName>Elevator.Subtranslator.LabelDecliner</AssemblyName>
+    <ProjectGuid>{E6FF42A2-0C16-4A67-A982-9C6D09422D93}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Elevator.Subtranslator.ConsoleTools</RootNamespace>
+    <AssemblyName>Elevator.Subtranslator.ConsoleTools</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -24,21 +23,14 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugType>none</DebugType>
+    <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\..\Subtranslator\</OutputPath>
+    <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CommandLine, Version=2.0.0.0, Culture=neutral, PublicKeyToken=de6f01bd326f8c32, processorArchitecture=MSIL">
-      <HintPath>..\packages\CommandLineParser20.2.0.0.0\lib\net40\CommandLine.dll</HintPath>
-    </Reference>
-    <Reference Include="Cyriller, Version=0.0.0.2, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Miyconst.Cyriller.0.0.2\lib\net45\Cyriller.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -49,26 +41,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DeclinationTools.cs" />
-    <Compile Include="Program.cs" />
+    <Compile Include="SmartConsole.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="App.config" />
-    <None Include="DeclineLabels.bat">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Elevator.Subtranslator.Common\Elevator.Subtranslator.Common.csproj">
-      <Project>{6B08F73A-C27C-4C54-AFA7-AC9574ECFE13}</Project>
-      <Name>Elevator.Subtranslator.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Elevator.Subtranslator.ConsoleTools\Elevator.Subtranslator.ConsoleTools.csproj">
-      <Project>{e6ff42a2-0c16-4a67-a982-9c6d09422d93}</Project>
-      <Name>Elevator.Subtranslator.ConsoleTools</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

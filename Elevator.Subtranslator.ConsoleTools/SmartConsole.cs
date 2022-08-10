@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Text.RegularExpressions;
 
-namespace Elevator.Subtranslator.LabelDecliner
+namespace Elevator.Subtranslator.ConsoleTools
 {
-	public static class ConsoleTools
+	public class SmartConsole
 	{
-		private static readonly Regex _wordStartRegex = new Regex(@"\s\w", RegexOptions.Compiled);
-
 		public static string ReadLine(string defaultValue, int cursorRelativePosBefore, out int cursorRelativePosAfter)
 		{
 			int cursorBase = Console.CursorLeft;
