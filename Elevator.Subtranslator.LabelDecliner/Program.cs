@@ -3,6 +3,7 @@ using Cyriller;
 using Cyriller.Model;
 using Elevator.Subtranslator.Common;
 using Elevator.Subtranslator.ConsoleTools;
+using Elevator.Subtranslator.DeclinationTools;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -115,7 +116,7 @@ namespace Elevator.Subtranslator.LabelDecliner
 							FileUtil.PushLine(arguments.Output, string.Empty);
 							FileUtil.PushLine(arguments.Output, "// " + injection.DefType);
 						}
-						FileUtil.PushLine(arguments.Output, DeclinationTools.Serialize(currentDeclination));
+						FileUtil.PushLine(arguments.Output, CaseTools.Serialize(currentDeclination));
 						currentDeclination = null;
 						history.Add(Option.Accept);
 						labelIndex++;
@@ -129,7 +130,7 @@ namespace Elevator.Subtranslator.LabelDecliner
 								FileUtil.PushLine(arguments.Output, string.Empty);
 								FileUtil.PushLine(arguments.Output, "// " + injection.DefType);
 							}
-							FileUtil.PushLine(arguments.Output, DeclinationTools.Serialize(currentDeclination));
+							FileUtil.PushLine(arguments.Output, CaseTools.Serialize(currentDeclination));
 							currentDeclination = null;
 							history.Add(Option.Accept);
 							labelIndex++;
@@ -151,7 +152,7 @@ namespace Elevator.Subtranslator.LabelDecliner
 						if (prevOption == Option.Accept)
 						{
 							string prevDeclinationLine = FileUtil.PopLine(arguments.Output);
-							currentDeclination = DeclinationTools.Deserialize(prevDeclinationLine);
+							currentDeclination = CaseTools.Deserialize(prevDeclinationLine);
 						}
 						else if (prevOption == Option.Ignore)
 						{
@@ -172,12 +173,12 @@ namespace Elevator.Subtranslator.LabelDecliner
 		{
 			int openSymbolIndex = phrase.IndexOfAny(ignoreSuffixesStart);
 			if (openSymbolIndex == -1)
-				return DeclinationTools.Decline(decliner, phrase);
+				return CaseTools.Decline(decliner, phrase);
 
 			string parenthesisExpr = phrase.Substring(openSymbolIndex, phrase.Length - openSymbolIndex);
 			string parenthesisLessPhrase = phrase.Remove(openSymbolIndex, phrase.Length - openSymbolIndex);
 
-			CyrResult result = DeclinationTools.Decline(decliner, parenthesisLessPhrase);
+			CyrResult result = CaseTools.Decline(decliner, parenthesisLessPhrase);
 			if (result == null)
 				return null;
 

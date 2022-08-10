@@ -1,10 +1,10 @@
-﻿using Cyriller;
+﻿using System;
+using Cyriller;
 using Cyriller.Model;
-using System;
 
-namespace Elevator.Subtranslator.LabelDecliner
+namespace Elevator.Subtranslator.DeclinationTools
 {
-	public static class DeclinationTools
+	public class CaseTools
 	{
 		public static CyrResult Decline(CyrPhrase decliner, string phrase)
 		{
@@ -79,4 +79,5 @@ namespace Elevator.Subtranslator.LabelDecliner
 				cases[5]);
 		}
 	}
+}
 }
