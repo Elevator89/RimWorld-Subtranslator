@@ -116,7 +116,7 @@ namespace Elevator.Subtranslator.LabelDecliner
 							FileUtil.PushLine(arguments.Output, string.Empty);
 							FileUtil.PushLine(arguments.Output, "// " + injection.DefType);
 						}
-						FileUtil.PushLine(arguments.Output, CaseTools.Serialize(currentDeclination));
+						FileUtil.PushLine(arguments.Output, ToLine(currentDeclination));
 						currentDeclination = null;
 						history.Add(Option.Accept);
 						labelIndex++;
@@ -130,7 +130,7 @@ namespace Elevator.Subtranslator.LabelDecliner
 								FileUtil.PushLine(arguments.Output, string.Empty);
 								FileUtil.PushLine(arguments.Output, "// " + injection.DefType);
 							}
-							FileUtil.PushLine(arguments.Output, CaseTools.Serialize(currentDeclination));
+							FileUtil.PushLine(arguments.Output, ToLine(currentDeclination));
 							currentDeclination = null;
 							history.Add(Option.Accept);
 							labelIndex++;
@@ -152,7 +152,7 @@ namespace Elevator.Subtranslator.LabelDecliner
 						if (prevOption == Option.Accept)
 						{
 							string prevDeclinationLine = FileUtil.PopLine(arguments.Output);
-							currentDeclination = CaseTools.Deserialize(prevDeclinationLine);
+							currentDeclination = FromLine(prevDeclinationLine);
 						}
 						else if (prevOption == Option.Ignore)
 						{
@@ -196,7 +196,7 @@ namespace Elevator.Subtranslator.LabelDecliner
 			foreach (CasesEnum labelCase in Enum.GetValues(typeof(CasesEnum)))
 			{
 				Console.Write($" {labelCase,15}: ");
-				declinationResult.Set(labelCase, SmartConsole.ReadLine(declinationResult.Get(labelCase), cursorPos, out cursorPos));
+				declinationResult.Set(labelCase, SmartConsole.EditLine(declinationResult.Get(labelCase), cursorPos, out cursorPos));
 			}
 		}
 
@@ -216,6 +216,30 @@ namespace Elevator.Subtranslator.LabelDecliner
 		private static string GetLastPart(Injection injection)
 		{
 			return injection.DefPathParts[injection.DefPathParts.Length - 1];
+		}
+
+		public static string ToLine(CyrResult declination)
+		{
+			return
+				$"{declination.Nominative}; " +
+				$"{declination.Genitive}; " +
+				$"{declination.Dative}; " +
+				$"{declination.Accusative}; " +
+				$"{declination.Instrumental}; " +
+				$"{declination.Prepositional}";
+		}
+
+		public static CyrResult FromLine(string declinationStr)
+		{
+			string[] cases = declinationStr.Split(new string[] { "; " }, StringSplitOptions.RemoveEmptyEntries);
+
+			return new CyrResult(
+				cases[0],
+				cases[1],
+				cases[2],
+				cases[3],
+				cases[4],
+				cases[5]);
 		}
 	}
 }

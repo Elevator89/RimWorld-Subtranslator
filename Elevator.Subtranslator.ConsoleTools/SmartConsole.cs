@@ -4,7 +4,7 @@ namespace Elevator.Subtranslator.ConsoleTools
 {
 	public class SmartConsole
 	{
-		public static string ReadLine(string defaultValue, int cursorRelativePosBefore, out int cursorRelativePosAfter)
+		public static string EditLine(string defaultValue, int cursorRelativePosBefore, out int cursorRelativePosAfter)
 		{
 			int cursorBase = Console.CursorLeft;
 			string value = defaultValue;

@@ -54,30 +54,5 @@ namespace Elevator.Subtranslator.DeclinationTools
 				return null;
 			}
 		}
-
-		public static string Serialize(CyrResult declination)
-		{
-			return
-				$"{declination.Nominative}; " +
-				$"{declination.Genitive}; " +
-				$"{declination.Dative}; " +
-				$"{declination.Accusative}; " +
-				$"{declination.Instrumental}; " +
-				$"{declination.Prepositional}";
-		}
-
-		public static CyrResult Deserialize(string declinationStr)
-		{
-			string[] cases = declinationStr.Split(new string[] { "; " }, StringSplitOptions.RemoveEmptyEntries);
-
-			return new CyrResult(
-				cases[0],
-				cases[1],
-				cases[2],
-				cases[3],
-				cases[4],
-				cases[5]);
-		}
 	}
-}
 }
