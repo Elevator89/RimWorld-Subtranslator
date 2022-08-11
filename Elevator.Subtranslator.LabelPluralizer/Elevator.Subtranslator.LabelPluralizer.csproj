@@ -27,7 +27,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>..\..\Subtranslator\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -74,6 +74,10 @@
     <ProjectReference Include="..\Elevator.Subtranslator.ConsoleTools\Elevator.Subtranslator.ConsoleTools.csproj">
       <Project>{E6FF42A2-0C16-4A67-A982-9C6D09422D93}</Project>
       <Name>Elevator.Subtranslator.ConsoleTools</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Elevator.Subtranslator.DeclinationTools\Elevator.Subtranslator.DeclinationTools.csproj">
+      <Project>{89c137ab-1540-4be3-ad08-2f1bcbb12f01}</Project>
+      <Name>Elevator.Subtranslator.DeclinationTools</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

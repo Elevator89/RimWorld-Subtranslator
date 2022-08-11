@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using Cyriller.Model;
 using Elevator.Subtranslator.ConsoleTools;
+using Elevator.Subtranslator.DeclinationTools;
 
 namespace Elevator.Subtranslator.LabelPluralizer
 {
@@ -50,7 +51,7 @@ namespace Elevator.Subtranslator.LabelPluralizer
 
 			HashSet<string> defTypes = new HashSet<string>(arguments.DefsTypes.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries));
 
-			HashSet<string> ignoredInjections = File.Exists(arguments.Output)
+			HashSet<string> ignoredInjections = File.Exists(arguments.IgnoreFile)
 				? new HashSet<string>(File.ReadAllLines(arguments.IgnoreFile))
 				: new HashSet<string>();
 
@@ -174,31 +175,26 @@ namespace Elevator.Subtranslator.LabelPluralizer
 			int ignoredTailStart = phrase.IndexOfAny(ignoreSuffixesStart);
 			if (ignoredTailStart == -1)
 			{
-				CyrResult declinedPhrase = decliner.DeclinePlural(phrase, GetConditionsEnum.Strict);
-				return new PluralPair(phrase, declinedPhrase.Nominative);
+				CyrResult declinedPhrase = CaseTools.DeclinePlural(decliner, phrase);
+				return declinedPhrase == null ? null : new PluralPair(phrase, declinedPhrase.Nominative);
 			}
 
 			string ignoredSuffix = phrase.Substring(ignoredTailStart, phrase.Length - ignoredTailStart);
 			string head = phrase.Remove(ignoredTailStart, phrase.Length - ignoredTailStart);
 
-			CyrResult result = decliner.DeclinePlural(head, GetConditionsEnum.Strict);
-			if (result == null)
-				return null;
-
-			string pluralPhrase = result.Nominative + ignoredSuffix;
-			return new PluralPair(phrase, pluralPhrase);
+			CyrResult declinedHead = CaseTools.DeclinePlural(decliner, head);
+			return declinedHead == null ? null : new PluralPair(phrase, declinedHead.Nominative + ignoredSuffix);
 		}
 
 		private static PluralPair EditPluralization(PluralPair input)
 		{
 			int cursorPos = -1;
 
-			Console.Write($"   Singular: ");
-			string singular = SmartConsole.EditLine(input.Singular, cursorPos, out cursorPos);
+			Console.WriteLine($"   Singular: {input.Singular}");
 			Console.Write($"     Plural: ");
 			string plural = SmartConsole.EditLine(input.Plural, cursorPos, out cursorPos);
 
-			return new PluralPair(singular, plural);
+			return new PluralPair(input.Singular, plural);
 		}
 
 		private static void WritePluralization(PluralPair input)
