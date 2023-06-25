@@ -7,29 +7,29 @@ using System.Linq;
 
 namespace Elevator.Subtranslator.LabelGenderer
 {
-	enum Option { Unknown, Male, Female, Neuter, Plural, Ignore }
+	enum Option { Unknown, Male = 1, Female = 2, Neuter = 3, Plural = 4, Ignore }
 
 	class Options
 	{
-		[Option('d', "defs", Required = true, HelpText = "Path to translation DefInjected folder.")]
+		[Option('d', "defsPath", Required = true, HelpText = "Path to translation DefInjected folder.")]
 		public string DefsPath { get; set; }
 
-		[Option('t', "def types", DefaultValue = "", Required = false, HelpText = "Use only these def types.")]
+		[Option('t', "defTypes", DefaultValue = "", Required = false, HelpText = "Use only these def types.")]
 		public string DefsTypes { get; set; }
 
-		[Option('m', "male", Required = true, HelpText = "Path to the file with male-gendered nouns.")]
+		[Option('m', "maleFile", Required = true, HelpText = "Path to the file with male-gendered nouns.")]
 		public string MaleGenderFile { get; set; }
 
-		[Option('f', "female", Required = true, HelpText = "Path to the file with female-gendered nouns.")]
+		[Option('f', "femaleFile", Required = true, HelpText = "Path to the file with female-gendered nouns.")]
 		public string FemaleGenderFile { get; set; }
 
-		[Option('n', "neuter", Required = true, HelpText = "Path to the file with neuter-gendered nouns.")]
+		[Option('n', "neuterFile", Required = true, HelpText = "Path to the file with neuter-gendered nouns.")]
 		public string NeuterGenderFile { get; set; }
 
-		[Option('p', "plural", Required = true, HelpText = "Path to the file with plural-only nouns.")]
+		[Option('p', "pluralFile", Required = true, HelpText = "Path to the file with plural-only nouns.")]
 		public string PluralGenderFile { get; set; }
 
-		[Option('i', "ignored", Required = true, HelpText = "Path to the file with nouns, for which gender is ignored.")]
+		[Option('i', "ignoreFile", Required = true, HelpText = "Path to the file with nouns, for which gender is ignored.")]
 		public string IgnoreFile { get; set; }
 	}
 
@@ -50,11 +50,11 @@ namespace Elevator.Subtranslator.LabelGenderer
 
 			HashSet<string> defTypes = new HashSet<string>(options.DefsTypes.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries));
 
-			HashSet<string> maleLabels = new HashSet<string>(File.ReadAllLines(options.MaleGenderFile));
-			HashSet<string> femaleLabels = new HashSet<string>(File.ReadAllLines(options.FemaleGenderFile));
-			HashSet<string> neuterLabels = new HashSet<string>(File.ReadAllLines(options.NeuterGenderFile));
-			HashSet<string> pluralLabels = new HashSet<string>(File.ReadAllLines(options.PluralGenderFile));
-			HashSet<string> ignoredInjections = new HashSet<string>(File.ReadAllLines(options.IgnoreFile));
+			HashSet<string> maleLabels = File.Exists(options.MaleGenderFile) ? new HashSet<string>(File.ReadAllLines(options.MaleGenderFile)) : new HashSet<string>();
+			HashSet<string> femaleLabels = File.Exists(options.FemaleGenderFile) ? new HashSet<string>(File.ReadAllLines(options.FemaleGenderFile)) : new HashSet<string>();
+			HashSet<string> neuterLabels = File.Exists(options.NeuterGenderFile) ? new HashSet<string>(File.ReadAllLines(options.NeuterGenderFile)) : new HashSet<string>();
+			HashSet<string> pluralLabels = File.Exists(options.PluralGenderFile) ? new HashSet<string>(File.ReadAllLines(options.PluralGenderFile)) : new HashSet<string>();
+			HashSet<string> ignoredInjections = File.Exists(options.IgnoreFile) ? new HashSet<string>(File.ReadAllLines(options.IgnoreFile)) : new HashSet<string>();
 
 			Injection[] allLabels = analyzer
 				.ReadInjections(options.DefsPath)
@@ -76,6 +76,8 @@ namespace Elevator.Subtranslator.LabelGenderer
 
 			string prevDefType = "";
 
+			bool[] newDefFlags = new bool[6] { true, true, true, true, true, true };
+
 			for (int labelIndex = 0; labelIndex < allLabels.Length; ++labelIndex)
 			{
 				Injection injection = allLabels[labelIndex];
@@ -85,6 +87,14 @@ namespace Elevator.Subtranslator.LabelGenderer
 				Console.Write($"{labelIndex + 1}/{allLabels.Length} {injection.DefType} <{injection.DefPath}> \"{label}\": ");
 
 				ConsoleKeyInfo keyInfo = Console.ReadKey();
+
+				if (injection.DefType != prevDefType)
+				{
+					for (int i = (int)Option.Male; i <= (int)Option.Plural; ++i)
+						newDefFlags[i] = true;
+
+					prevDefType = injection.DefType;
+				}
 
 				switch (keyInfo.Key)
 				{
@@ -118,21 +128,19 @@ namespace Elevator.Subtranslator.LabelGenderer
 							}
 							else
 							{
-								if (injection.DefType != prevDefType)
+								if (newDefFlags[(int)option])
 								{
 									FileUtil.PushLine(fileName, string.Empty);
 									FileUtil.PushLine(fileName, "// " + injection.DefType);
+									newDefFlags[(int)option] = false;
 								}
 								FileUtil.PushLine(fileName, label);
-
 							}
 
 							history.Add(option);
 						}
 						break;
 				}
-
-				prevDefType = injection.DefType;
 			}
 		}
 

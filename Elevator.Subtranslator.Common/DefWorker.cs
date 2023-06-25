@@ -74,6 +74,28 @@ namespace Elevator.Subtranslator.Common
 			throw new KeyNotFoundException("Def " + parentName + " not found");
 		}
 
+		public static XElement FindDefParent(XDocument mergedDefDoc, XElement def, Func<XElement, bool> predicate)
+		{
+			if (def == null)
+				throw new ArgumentException("Def is null");
+
+			XElement allDefs = mergedDefDoc.Root;
+
+			while (def != null)
+			{
+				if (predicate(def))
+					return def;
+
+				XAttribute parentNameAttrib = def.Attribute("ParentName");
+				if (parentNameAttrib == null)
+					return null;
+
+				string parentDefName = parentNameAttrib.Value;
+				def = GetDef(allDefs, def.Name.LocalName, parentDefName);
+			}
+			return null;
+		}
+
 		public static bool DefHasElement(XDocument mergedDefDoc, XElement def, string elementName)
 		{
 			if (def == null)
